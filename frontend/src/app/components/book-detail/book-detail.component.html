@@ -1,0 +1,22 @@
+<div class="container">
+  <a routerLink="/books" class="btn-back">Voltar</a>
+
+  <div *ngIf="loading" class="loading">Carregando...</div>
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+  <div *ngIf="book" class="detail-card">
+    <h2>{{ book.title }}</h2>
+    <p><strong>Autor:</strong> {{ book.author }}</p>
+    <p><strong>ISBN:</strong> {{ book.isbn }}</p>
+    <p><strong>Editora:</strong> {{ book.publisher }}</p>
+    <p><strong>Gênero:</strong> {{ book.genre }}</p>
+    <p><strong>Ano de Publicação:</strong> {{ book.publicationYear }}</p>
+    <p><strong>Páginas:</strong> {{ book.pageCount }}</p>
+    <p *ngIf="book.description"><strong>Descrição:</strong> {{ book.description }}</p>
+
+    <div class="actions">
+      <a [routerLink]="['/books', book.id, 'edit']" class="btn-edit">Editar</a>
+      <button (click)="deleteBook(book.id)" class="btn-delete">Excluir</button>
+    </div>
+  </div>
+</div>

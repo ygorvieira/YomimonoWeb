@@ -1,0 +1,50 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { BookFormComponent } from './book-form.component';
+import { BookService } from '../../services/book.service';
+import { of } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+
+describe('BookFormComponent', () => {
+  let component: BookFormComponent;
+  let fixture: ComponentFixture<BookFormComponent>;
+  let bookService: jasmine.SpyObj<BookService>;
+
+  beforeEach(async () => {
+    const spy = jasmine.createSpyObj('BookService', ['create', 'getById']);
+
+    await TestBed.configureTestingModule({
+      imports: [BookFormComponent, HttpClientTestingModule, RouterTestingModule],
+      providers: [
+        { provide: BookService, useValue: spy },
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => null } } } }
+      ]
+    }).compileComponents();
+
+    bookService = TestBed.inject(BookService) as jasmine.SpyObj<BookService>;
+    fixture = TestBed.createComponent(BookFormComponent);
+    component = fixture.componentInstance;
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should be in create mode when no id', () => {
+    expect(component.isEditMode).toBeFalse();
+  });
+
+  it('should call create on submit when in create mode', () => {
+    bookService.create.and.returnValue(of({
+      valid: true,
+      data: { id: '1', title: 'Test', author: 'Author', isbn: '123', publicationYear: 2024, publisher: 'Pub', genre: 'Ficção', pageCount: 100, description: null, coverUrl: null, createdAt: '', updatedAt: '' },
+      messages: ['Livro cadastrado com sucesso.'],
+      statusCode: 201
+    }));
+
+    component.onSubmit();
+
+    expect(bookService.create).toHaveBeenCalled();
+  });
+});

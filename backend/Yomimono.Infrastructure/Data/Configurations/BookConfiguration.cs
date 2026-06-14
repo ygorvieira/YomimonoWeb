@@ -1,0 +1,46 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Yomimono.Domain.Entities;
+
+namespace Yomimono.Infrastructure.Data.Configurations;
+
+public class BookConfiguration : IEntityTypeConfiguration<Book>
+{
+    public void Configure(EntityTypeBuilder<Book> builder)
+    {
+        builder.ToTable("Books");
+
+        builder.HasKey(b => b.Id);
+
+        builder.Property(b => b.Title)
+            .IsRequired()
+            .HasMaxLength(200);
+
+        builder.Property(b => b.Author)
+            .IsRequired()
+            .HasMaxLength(150);
+
+        builder.Property(b => b.Isbn)
+            .IsRequired()
+            .HasMaxLength(20);
+
+        builder.HasIndex(b => b.Isbn)
+            .IsUnique();
+
+        builder.Property(b => b.Publisher)
+            .IsRequired()
+            .HasMaxLength(150);
+
+        builder.Property(b => b.Genre)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.Property(b => b.Description)
+            .HasMaxLength(2000);
+
+        builder.Property(b => b.CoverUrl)
+            .HasMaxLength(500);
+
+        builder.HasQueryFilter(b => b.DeletedAt == null);
+    }
+}

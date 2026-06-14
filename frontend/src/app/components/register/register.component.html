@@ -1,0 +1,35 @@
+<div class="container auth-form">
+  <h2>Cadastro</h2>
+
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+  <form (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="userName">Nome</label>
+      <input id="userName" [(ngModel)]="userName" name="userName" required />
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input id="email" type="email" [(ngModel)]="email" name="email" required />
+    </div>
+
+    <div class="form-group">
+      <label for="password">Senha</label>
+      <input id="password" type="password" [(ngModel)]="password" name="password" required />
+    </div>
+
+    <div class="form-group">
+      <label for="confirmPassword">Confirmar Senha</label>
+      <input id="confirmPassword" type="password" [(ngModel)]="confirmPassword" name="confirmPassword" required />
+    </div>
+
+    <button type="submit" [disabled]="loading" class="btn-primary">
+      {{ loading ? 'Cadastrando...' : 'Cadastrar' }}
+    </button>
+  </form>
+
+  <p class="auth-link">
+    Já tem conta? <a routerLink="/login">Faça login</a>
+  </p>
+</div>

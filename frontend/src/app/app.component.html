@@ -1,0 +1,16 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <a class="nav-brand" routerLink="/">Yomimono</a>
+    <div class="nav-links">
+      <a *ngIf="!isLoggedIn" routerLink="/login">Login</a>
+      <a *ngIf="!isLoggedIn" routerLink="/register">Cadastro</a>
+      <a *ngIf="isLoggedIn" routerLink="/books">Livros</a>
+      <span *ngIf="isLoggedIn" class="nav-user">{{ userName }}</span>
+      <button *ngIf="isLoggedIn" (click)="logout()" class="btn-logout">Sair</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <router-outlet></router-outlet>
+</main>

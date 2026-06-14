@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Yomimono.Api.Tests/Yomimono.Api.Tests.csproj" />
+  <Project Path="Yomimono.Api/Yomimono.Api.csproj" />
+  <Project Path="Yomimono.Application/Yomimono.Application.csproj" />
+  <Project Path="Yomimono.Domain/Yomimono.Domain.csproj" />
+  <Project Path="Yomimono.Infrastructure/Yomimono.Infrastructure.csproj" />
+</Solution>

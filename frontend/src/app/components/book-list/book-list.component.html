@@ -1,0 +1,39 @@
+<div class="container">
+  <h1>Yomimono - Catálogo de Livros</h1>
+
+  <a routerLink="/books/new" class="btn-primary">+ Novo Livro</a>
+
+  <div *ngIf="loading" class="loading">Carregando...</div>
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+  <table *ngIf="!loading && books.length > 0">
+    <thead>
+      <tr>
+        <th>Título</th>
+        <th>Autor</th>
+        <th>ISBN</th>
+        <th>Gênero</th>
+        <th>Ano</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let book of books">
+        <td>{{ book.title }}</td>
+        <td>{{ book.author }}</td>
+        <td>{{ book.isbn }}</td>
+        <td>{{ book.genre }}</td>
+        <td>{{ book.publicationYear }}</td>
+        <td>
+          <a [routerLink]="['/books', book.id]" class="btn-detail">Detalhes</a>
+          <a [routerLink]="['/books', book.id, 'edit']" class="btn-edit">Editar</a>
+          <button (click)="deleteBook(book.id)" class="btn-delete">Excluir</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && books.length === 0" class="empty">
+    Nenhum livro cadastrado.
+  </div>
+</div>

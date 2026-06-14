@@ -1,0 +1,125 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f5f5f5;
+  color: #333;
+}
+
+.navbar {
+  background: #2c3e50;
+  color: #fff;
+  padding: 0 16px;
+}
+
+.nav-container {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+}
+
+.nav-brand {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-links a {
+  color: #ecf0f1;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.nav-links a:hover {
+  color: #3498db;
+}
+
+.nav-user {
+  font-size: 14px;
+  color: #bdc3c7;
+}
+
+.btn-logout {
+  background: none;
+  border: 1px solid #e74c3c;
+  color: #e74c3c;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn-logout:hover {
+  background: #e74c3c;
+  color: #fff;
+}
+
+main {
+  padding: 24px;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.auth-form {
+  max-width: 400px;
+}
+
+h1, h2 { color: #2c3e50; }
+
+a { text-decoration: none; }
+
+.btn-primary, .btn-edit, .btn-detail, .btn-delete, .btn-back {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  margin-right: 4px;
+}
+
+.btn-primary { background: #3498db; color: #fff; }
+.btn-primary:disabled { background: #95a5a6; cursor: not-allowed; }
+.btn-edit { background: #f39c12; color: #fff; }
+.btn-detail { background: #2ecc71; color: #fff; }
+.btn-delete { background: #e74c3c; color: #fff; }
+.btn-back { background: #95a5a6; color: #fff; }
+
+table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+th, td { text-align: left; padding: 10px; border-bottom: 1px solid #ddd; }
+th { background: #f8f9fa; }
+
+.loading, .empty { padding: 20px; text-align: center; color: #7f8c8d; }
+.error { padding: 12px; background: #fce4e4; color: #e74c3c; border-radius: 4px; margin: 12px 0; }
+.success { padding: 12px; background: #d4edda; color: #155724; border-radius: 4px; margin: 12px 0; }
+
+.book-form .form-group, .auth-form .form-group { margin-bottom: 16px; }
+.book-form label, .auth-form label { display: block; margin-bottom: 4px; font-weight: 600; }
+.book-form input, .book-form textarea, .auth-form input {
+  width: 100%; padding: 8px; border: 1px solid #ddd;
+  border-radius: 4px; box-sizing: border-box;
+}
+.book-form textarea { resize: vertical; }
+
+.detail-card p { margin: 8px 0; }
+.actions { margin-top: 20px; }
+
+.auth-link { margin-top: 16px; text-align: center; }
+.auth-link a { color: #3498db; }
