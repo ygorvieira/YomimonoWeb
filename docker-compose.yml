@@ -28,7 +28,7 @@ services:
       ASPNETCORE_URLS: "http://+:8080"
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=yomimono;Username=yomimono;Password=yomimono"
-      Jwt__Secret: "supersecretkeyyomimono2024!@#$%"
+      Jwt__Secret: "supersecretkeyyomimono2024!@#$%&"
       Jwt__Issuer: "Yomimono"
       Jwt__Audience: "YomimonoWeb"
       Jwt__ExpireMinutes: "120"
