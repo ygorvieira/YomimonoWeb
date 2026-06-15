@@ -28,7 +28,7 @@ export class GenreListComponent implements OnInit {
         else this.errorMessage = result.messages?.join(', ') || 'Erro ao carregar gêneros.';
         this.loading = false;
       },
-      error: () => { this.errorMessage = 'Erro de conexão.'; this.loading = false; }
+      error: (err) => { this.errorMessage = err.error?.messages?.join(', ') || 'Erro de conexão.'; this.loading = false; }
     });
   }
 

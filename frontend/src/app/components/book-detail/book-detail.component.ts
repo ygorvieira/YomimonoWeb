@@ -39,8 +39,8 @@ export class BookDetailComponent implements OnInit {
         }
         this.loading = false;
       },
-      error: () => {
-        this.errorMessage = 'Erro de conexão com o servidor.';
+      error: (err) => {
+        this.errorMessage = err.error?.messages?.join(', ') || 'Erro de conexão com o servidor.';
         this.loading = false;
       }
     });

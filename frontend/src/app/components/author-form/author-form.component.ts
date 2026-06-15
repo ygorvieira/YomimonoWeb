@@ -53,7 +53,7 @@ export class AuthorFormComponent implements OnInit {
         }
         this.submitting = false;
       },
-      error: () => { this.errorMessage = 'Erro de conexão.'; this.submitting = false; }
+      error: (err) => { this.errorMessage = err.error?.messages?.join(', ') || 'Erro de conexão.'; this.submitting = false; }
     });
   }
 }

@@ -60,14 +60,14 @@ export class BookFormComponent implements OnInit {
   loadAuthors(): void {
     this.authorService.getAll().subscribe({
       next: (result) => { if (result.valid) this.authors = result.data; },
-      error: () => this.errorMessage = 'Erro ao carregar autores.'
+      error: (err) => this.errorMessage = err.error?.messages?.join(', ') || 'Erro ao carregar autores.'
     });
   }
 
   loadGenres(): void {
     this.genreService.getAll().subscribe({
       next: (result) => { if (result.valid) this.genres = result.data; },
-      error: () => this.errorMessage = 'Erro ao carregar gêneros.'
+      error: (err) => this.errorMessage = err.error?.messages?.join(', ') || 'Erro ao carregar gêneros.'
     });
   }
 
@@ -91,12 +91,12 @@ export class BookFormComponent implements OnInit {
             isLiked: book.isLiked
           };
         } else {
-          this.errorMessage = 'Livro não encontrado.';
+          this.errorMessage = result.messages?.join(', ') || 'Livro não encontrado.';
         }
         this.loading = false;
       },
-      error: () => {
-        this.errorMessage = 'Erro de conexão com o servidor.';
+      error: (err) => {
+        this.errorMessage = err.error?.messages?.join(', ') || 'Erro de conexão com o servidor.';
         this.loading = false;
       }
     });
@@ -128,8 +128,8 @@ export class BookFormComponent implements OnInit {
           }
           this.submitting = false;
         },
-        error: () => {
-          this.errorMessage = 'Erro de conexão com o servidor.';
+        error: (err) => {
+          this.errorMessage = err.error?.messages?.join(', ') || 'Erro de conexão com o servidor.';
           this.submitting = false;
         }
       });
@@ -144,8 +144,8 @@ export class BookFormComponent implements OnInit {
           }
           this.submitting = false;
         },
-        error: () => {
-          this.errorMessage = 'Erro de conexão com o servidor.';
+        error: (err) => {
+          this.errorMessage = err.error?.messages?.join(', ') || 'Erro de conexão com o servidor.';
           this.submitting = false;
         }
       });
