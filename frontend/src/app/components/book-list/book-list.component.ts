@@ -96,4 +96,16 @@ export class BookListComponent implements OnInit {
       }
     });
   }
+
+  private readonly statusCycle = [null, 'Lendo', 'Lido', 'Abandonado'] as const;
+
+  cycleStatus(book: Book): void {
+    const currentIdx = this.statusCycle.indexOf(book.readingStatus as typeof this.statusCycle[number]);
+    const nextStatus = this.statusCycle[(currentIdx + 1) % this.statusCycle.length];
+    this.bookService.updateStatus(book.id, { readingStatus: nextStatus }).subscribe({
+      next: (result) => {
+        if (result.valid) book.readingStatus = result.data.readingStatus;
+      }
+    });
+  }
 }

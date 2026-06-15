@@ -48,9 +48,9 @@
         <td>{{ book.genreName }}</td>
         <td>{{ book.publicationYear }}</td>
         <td>
-          <span *ngIf="book.readingStatus" [class]="'status-' + (book.readingStatus | lowercase)">
-            {{ book.readingStatus }}
-          </span>
+          <button (click)="cycleStatus(book)" class="status-badge" [class]="'status-badge ' + (book.readingStatus || 'null')">
+            {{ book.readingStatus || '--' }}
+          </button>
         </td>
         <td>
           <button (click)="toggleLike(book)" class="btn-like" [class.liked]="book.isLiked">

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -102,6 +102,28 @@ export class BookFormComponent implements OnInit {
     });
   }
 
+  authorDropdownOpen = false;
+  authorSearchTerm = '';
+  newAuthorName = '';
+
+  get filteredAuthors(): Author[] {
+    if (!this.authorSearchTerm.trim()) return this.authors;
+    const term = this.authorSearchTerm.toLowerCase();
+    return this.authors.filter(a => a.name.toLowerCase().includes(term));
+  }
+
+  get selectedAuthors(): Author[] {
+    return this.authors.filter(a => this.model.authorIds.includes(a.id));
+  }
+
+  @HostListener('document:click', ['$event'])
+  closeDropdown(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (this.authorDropdownOpen && !target.closest('.author-select')) {
+      this.authorDropdownOpen = false;
+    }
+  }
+
   toggleAuthor(authorId: string): void {
     const idx = this.model.authorIds.indexOf(authorId);
     if (idx >= 0) {
@@ -111,13 +133,45 @@ export class BookFormComponent implements OnInit {
     }
   }
 
+  removeAuthor(authorId: string): void {
+    this.model.authorIds = this.model.authorIds.filter(id => id !== authorId);
+  }
+
+  selectedAuthorNames(): string {
+    const names = this.authors.filter(a => this.model.authorIds.includes(a.id)).map(a => a.name);
+    return names.length > 0 ? names.join(', ') : 'Selecionar autores';
+  }
+
+  addNewAuthor(): void {
+    const name = this.newAuthorName.trim();
+    if (!name) return;
+    this.authorService.create({ name }).subscribe({
+      next: (result) => {
+        if (result.valid) {
+          this.authors.push(result.data);
+          this.model.authorIds.push(result.data.id);
+          this.newAuthorName = '';
+        } else {
+          this.errorMessage = result.messages?.join(', ') || 'Erro ao adicionar autor.';
+        }
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.messages?.join(', ') || 'Erro de conexão.';
+      }
+    });
+  }
+
   onSubmit(): void {
     this.submitting = true;
     this.errorMessage = '';
     this.successMessage = '';
 
+    const payload = { ...this.model };
+    if (!payload.isbn) payload.isbn = null;
+    if (!payload.pageCount) payload.pageCount = null;
+
     if (this.isEditMode && this.bookId) {
-      const dto: UpdateBookDto = { ...this.model };
+      const dto: UpdateBookDto = payload;
       this.bookService.update(this.bookId, dto).subscribe({
         next: (result) => {
           if (result.valid) {
@@ -134,7 +188,7 @@ export class BookFormComponent implements OnInit {
         }
       });
     } else {
-      this.bookService.create(this.model).subscribe({
+      this.bookService.create(payload).subscribe({
         next: (result) => {
           if (result.valid) {
             this.successMessage = 'Livro cadastrado com sucesso!';
