@@ -18,5 +18,6 @@ public class GenreConfiguration : IEntityTypeConfiguration<Genre>
 
         builder.HasIndex(g => g.Name)
             .IsUnique();
+
     }
 }

@@ -152,16 +152,39 @@ namespace Yomimono.Infrastructure.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Yomimono.Domain.Entities.Book", b =>
+            modelBuilder.Entity("Yomimono.Domain.Entities.Author", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Author")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Authors", (string)null);
+                });
+
+            modelBuilder.Entity("Yomimono.Domain.Entities.Book", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CoverUrl")
                         .HasMaxLength(500)
@@ -177,10 +200,13 @@ namespace Yomimono.Infrastructure.Data.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
 
-                    b.Property<string>("Genre")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                    b.Property<Guid>("GenreId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsLiked")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Isbn")
                         .IsRequired()
@@ -198,6 +224,10 @@ namespace Yomimono.Infrastructure.Data.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
 
+                    b.Property<string>("ReadingStatus")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -208,10 +238,27 @@ namespace Yomimono.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GenreId");
+
                     b.HasIndex("Isbn")
                         .IsUnique();
 
                     b.ToTable("Books", (string)null);
+                });
+
+            modelBuilder.Entity("Yomimono.Domain.Entities.BookAuthor", b =>
+                {
+                    b.Property<Guid>("BookId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("BookId", "AuthorId");
+
+                    b.HasIndex("AuthorId");
+
+                    b.ToTable("BookAuthors", (string)null);
                 });
 
             modelBuilder.Entity("Yomimono.Domain.Entities.Genre", b =>
@@ -396,6 +443,36 @@ namespace Yomimono.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Yomimono.Domain.Entities.Book", b =>
+                {
+                    b.HasOne("Yomimono.Domain.Entities.Genre", "Genre")
+                        .WithMany()
+                        .HasForeignKey("GenreId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Genre");
+                });
+
+            modelBuilder.Entity("Yomimono.Domain.Entities.BookAuthor", b =>
+                {
+                    b.HasOne("Yomimono.Domain.Entities.Author", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Yomimono.Domain.Entities.Book", "Book")
+                        .WithMany("BookAuthors")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Book");
+                });
+
             modelBuilder.Entity("Yomimono.Domain.Entities.RefreshToken", b =>
                 {
                     b.HasOne("Yomimono.Domain.Entities.User", "User")
@@ -405,6 +482,11 @@ namespace Yomimono.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Yomimono.Domain.Entities.Book", b =>
+                {
+                    b.Navigation("BookAuthors");
                 });
 #pragma warning restore 612, 618
         }

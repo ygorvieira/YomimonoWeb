@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { BookService } from '../../services/book.service';
 import { Book } from '../../models/book.model';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-book-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './book-detail.component.html'
 })
 export class BookDetailComponent implements OnInit {
@@ -24,9 +24,7 @@ export class BookDetailComponent implements OnInit {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.loadBook(id);
-    }
+    if (id) this.loadBook(id);
   }
 
   loadBook(id: string): void {
@@ -48,13 +46,29 @@ export class BookDetailComponent implements OnInit {
     });
   }
 
+  toggleLike(): void {
+    if (!this.book) return;
+    this.bookService.updateStatus(this.book.id, { isLiked: !this.book.isLiked }).subscribe({
+      next: (result) => {
+        if (result.valid && this.book) this.book.isLiked = result.data.isLiked;
+      }
+    });
+  }
+
+  updateReadingStatus(status: string | null): void {
+    if (!this.book) return;
+    this.bookService.updateStatus(this.book.id, { readingStatus: status }).subscribe({
+      next: (result) => {
+        if (result.valid && this.book) this.book.readingStatus = result.data.readingStatus;
+      }
+    });
+  }
+
   deleteBook(id: string): void {
     if (confirm('Tem certeza que deseja excluir este livro?')) {
       this.bookService.delete(id).subscribe({
         next: (result) => {
-          if (result.valid) {
-            this.router.navigate(['/books']);
-          }
+          if (result.valid) this.router.navigate(['/books']);
         }
       });
     }

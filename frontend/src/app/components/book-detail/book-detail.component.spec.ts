@@ -27,20 +27,23 @@ describe('BookDetailComponent', () => {
     component = fixture.componentInstance;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+  it('should create', () => expect(component).toBeTruthy());
 
   it('should load book on init', () => {
     bookService.getById.and.returnValue(of({
       valid: true,
-      data: { id: '1', title: 'Dom Casmurro', author: 'Machado de Assis', isbn: '9788535902778', publicationYear: 1899, publisher: 'Garnier', genre: 'Romance', pageCount: 256, description: null, coverUrl: null, createdAt: '', updatedAt: '' },
+      data: {
+        id: '1', title: 'Dom Casmurro', authorIds: ['a1'], authorNames: ['Machado de Assis'],
+        isbn: '9788535902778', publicationYear: 1899, publisher: 'Garnier',
+        genreId: 'g1', genreName: 'Romance', pageCount: 256,
+        description: null, coverUrl: null, readingStatus: null, isLiked: false,
+        createdAt: '', updatedAt: ''
+      },
       messages: [],
       statusCode: 200
     }));
 
     fixture.detectChanges();
-
     expect(component.book).toBeTruthy();
     expect(component.book!.title).toBe('Dom Casmurro');
   });
@@ -54,7 +57,6 @@ describe('BookDetailComponent', () => {
     }));
 
     fixture.detectChanges();
-
     expect(component.errorMessage).toBe('Livro não encontrado.');
   });
 });

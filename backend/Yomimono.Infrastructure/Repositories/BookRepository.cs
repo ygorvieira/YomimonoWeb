@@ -9,12 +9,31 @@ public class BookRepository(AppDbContext context) : IBookRepository
 {
     public async Task<Book?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await context.Books.FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
+        return await context.Books
+            .IgnoreQueryFilters()
+            .Include(b => b.BookAuthors).ThenInclude(ba => ba.Author)
+            .Include(b => b.Genre)
+            .FirstOrDefaultAsync(b => b.Id == id && b.DeletedAt == null, cancellationToken);
     }
 
-    public async Task<IEnumerable<Book>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Book>> GetAllAsync(Guid? genreId = null, Guid? authorId = null, string? readingStatus = null, CancellationToken cancellationToken = default)
     {
-        return await context.Books.OrderBy(b => b.Title).ToListAsync(cancellationToken);
+        var query = context.Books
+            .IgnoreQueryFilters()
+            .Include(b => b.BookAuthors).ThenInclude(ba => ba.Author)
+            .Include(b => b.Genre)
+            .Where(b => b.DeletedAt == null);
+
+        if (genreId.HasValue)
+            query = query.Where(b => b.GenreId == genreId.Value);
+
+        if (authorId.HasValue)
+            query = query.Where(b => b.BookAuthors.Any(ba => ba.AuthorId == authorId.Value));
+
+        if (!string.IsNullOrWhiteSpace(readingStatus))
+            query = query.Where(b => b.ReadingStatus == readingStatus);
+
+        return await query.OrderBy(b => b.Title).ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(Book entity, CancellationToken cancellationToken = default)
@@ -36,16 +55,10 @@ public class BookRepository(AppDbContext context) : IBookRepository
         context.SaveChanges();
     }
 
-    public async Task<IEnumerable<Book>> GetByGenreAsync(string genre, CancellationToken cancellationToken = default)
-    {
-        return await context.Books
-            .Where(b => b.Genre == genre)
-            .OrderBy(b => b.Title)
-            .ToListAsync(cancellationToken);
-    }
-
     public async Task<Book?> GetByIsbnAsync(string isbn, CancellationToken cancellationToken = default)
     {
-        return await context.Books.FirstOrDefaultAsync(b => b.Isbn == isbn, cancellationToken);
+        return await context.Books
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(b => b.Isbn == isbn && b.DeletedAt == null, cancellationToken);
     }
 }

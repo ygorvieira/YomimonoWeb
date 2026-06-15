@@ -21,15 +21,23 @@ public class GetBookByIdQueryHandlerTests
     [Fact]
     public async Task Handle_ExistingBook_ShouldReturnValidResult()
     {
-        var (book, _) = Book.Create(
-            "Dom Casmurro", "Machado de Assis", "9788535902778",
-            1899, "Garnier", "Romance", 256, null, null
-        );
+        var authorId = Guid.NewGuid();
+        var genreId = Guid.NewGuid();
+        var genre = Genre.Create("Romance");
+        var (author, _) = Author.Create("Machado de Assis");
 
-        _repositoryMock.Setup(r => r.GetByIdAsync(book!.Id, It.IsAny<CancellationToken>()))
+        var (book, _) = Book.Create(
+            "Dom Casmurro", [authorId], "9788535902778",
+            1899, "Garnier", genreId, 256, null, null, null, false
+        );
+        book!.Genre = genre;
+        foreach (var ba in book.BookAuthors)
+            ba.GetType().GetProperty("Author")!.SetValue(ba, author);
+
+        _repositoryMock.Setup(r => r.GetByIdAsync(book.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(book);
 
-        var result = await _handler.Handle(new GetBookByIdQuery(book!.Id), CancellationToken.None);
+        var result = await _handler.Handle(new GetBookByIdQuery(book.Id), CancellationToken.None);
 
         result.Valid.ShouldBeTrue();
         result.Data.ShouldNotBeNull();

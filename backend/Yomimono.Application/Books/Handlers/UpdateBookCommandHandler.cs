@@ -1,18 +1,25 @@
+using Yomimono.Domain.Common;
+using Yomimono.Domain.Entities;
 using MediatR;
 using Yomimono.Application.Books.Commands;
+using Yomimono.Application.Authors.Common;
 using Yomimono.Application.Books.Common;
 using Yomimono.Application.Books.DTOs;
 using Yomimono.Application.Common;
-using Yomimono.Domain.Common;
+using Yomimono.Application.Genres.Common;
 
 namespace Yomimono.Application.Books.Handlers;
 
-public class UpdateBookCommandHandler(IBookRepository repository, IBookUniquenessChecker uniquenessChecker)
+public class UpdateBookCommandHandler(
+    IBookRepository bookRepository,
+    IAuthorRepository authorRepository,
+    IGenreRepository genreRepository,
+    IBookUniquenessChecker uniquenessChecker)
     : IRequestHandler<UpdateBookCommand, Result<BookDto>>
 {
     public async Task<Result<BookDto>> Handle(UpdateBookCommand request, CancellationToken cancellationToken)
     {
-        var book = await repository.GetByIdAsync(request.Id, cancellationToken);
+        var book = await bookRepository.GetByIdAsync(request.Id, cancellationToken);
         if (book is null)
             return Result<BookDto>.NotFound("Livro não encontrado.");
 
@@ -20,33 +27,62 @@ public class UpdateBookCommandHandler(IBookRepository repository, IBookUniquenes
         {
             var isUnique = await uniquenessChecker.IsIsbnUniqueAsync(request.Book.Isbn, request.Id, cancellationToken);
             if (!isUnique)
-                return Result<BookDto>.Failure("Já existe outro livro cadastrado com este ISBN.");
+                return Result<BookDto>.Failure("Já existe um livro cadastrado com este ISBN.");
+        }
+
+        Genre? genre = null;
+        if (request.Book.GenreId.HasValue)
+        {
+            genre = await genreRepository.GetByIdAsync(request.Book.GenreId.Value, cancellationToken);
+            if (genre is null)
+                return Result<BookDto>.Failure("Gênero não encontrado.");
+        }
+
+        if (request.Book.AuthorIds is not null)
+        {
+            var authorIds = request.Book.AuthorIds.Distinct().ToArray();
+            if (authorIds.Length == 0)
+                return Result<BookDto>.Failure("É necessário selecionar pelo menos um autor.");
+
+            foreach (var authorId in authorIds)
+            {
+                var author = await authorRepository.GetByIdAsync(authorId, cancellationToken);
+                if (author is null)
+                    return Result<BookDto>.Failure($"Autor com ID {authorId} não encontrado.");
+            }
         }
 
         var error = book.UpdateDetails(
-            request.Book.Title,
-            request.Book.Author,
-            request.Book.Isbn,
-            request.Book.PublicationYear,
-            request.Book.Publisher,
-            request.Book.Genre,
-            request.Book.PageCount,
-            request.Book.Description,
-            request.Book.CoverUrl
+            request.Book.Title, request.Book.AuthorIds, request.Book.Isbn,
+            request.Book.PublicationYear, request.Book.Publisher,
+            request.Book.GenreId, request.Book.PageCount,
+            request.Book.Description, request.Book.CoverUrl,
+            request.Book.ReadingStatus, request.Book.IsLiked
         );
 
         if (error is not null)
             return Result<BookDto>.Failure(error);
 
-        repository.Update(book);
+        bookRepository.Update(book);
 
-        var dto = new BookDto(
-            book.Id, book.Title, book.Author, book.Isbn,
-            book.PublicationYear, book.Publisher, book.Genre,
+        if (genre is null)
+            genre = book.Genre;
+
+        var dto = MapToDto(book, genre);
+        return Result<BookDto>.Success(dto, "Livro atualizado com sucesso.");
+    }
+
+    private static BookDto MapToDto(Book book, Genre genre)
+    {
+        return new BookDto(
+            book.Id, book.Title,
+            book.BookAuthors.Select(ba => ba.AuthorId).ToArray(),
+            book.BookAuthors.Select(ba => ba.Author?.Name ?? "").ToArray(),
+            book.Isbn, book.PublicationYear, book.Publisher,
+            book.GenreId, genre.Name,
             book.Description, book.PageCount, book.CoverUrl,
+            book.ReadingStatus, book.IsLiked,
             book.CreatedAt, book.UpdatedAt
         );
-
-        return Result<BookDto>.Success(dto, "Livro atualizado com sucesso.");
     }
 }

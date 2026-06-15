@@ -5,7 +5,8 @@ using Yomimono.Application.Common;
 
 namespace Yomimono.Application.Books.Handlers;
 
-public class DeleteBookCommandHandler(IBookRepository repository) : IRequestHandler<DeleteBookCommand, Result<bool>>
+public class DeleteBookCommandHandler(IBookRepository repository)
+    : IRequestHandler<DeleteBookCommand, Result<bool>>
 {
     public async Task<Result<bool>> Handle(DeleteBookCommand request, CancellationToken cancellationToken)
     {
@@ -14,6 +15,6 @@ public class DeleteBookCommandHandler(IBookRepository repository) : IRequestHand
             return Result<bool>.NotFound("Livro não encontrado.");
 
         repository.Delete(book);
-        return Result<bool>.Success(true, "Livro removido com sucesso.");
+        return Result<bool>.Success(true, "Livro excluído com sucesso.");
     }
 }

@@ -1,0 +1,17 @@
+<div class="container">
+  <a routerLink="/genres" class="btn-back">Voltar</a>
+  <h2>{{ isEditMode ? 'Editar Gênero' : 'Novo Gênero' }}</h2>
+
+  <div *ngIf="successMessage" class="success">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+  <form (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="name">Nome *</label>
+      <input id="name" name="name" [(ngModel)]="name" required />
+    </div>
+    <button type="submit" [disabled]="submitting" class="btn-primary">
+      {{ submitting ? 'Salvando...' : (isEditMode ? 'Atualizar' : 'Cadastrar') }}
+    </button>
+  </form>
+</div>

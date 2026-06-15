@@ -6,18 +6,27 @@ using Yomimono.Application.Common;
 
 namespace Yomimono.Application.Books.Handlers;
 
-public class GetAllBooksQueryHandler(IBookRepository repository) : IRequestHandler<GetAllBooksQuery, Result<IEnumerable<BookDto>>>
+public class GetAllBooksQueryHandler(IBookRepository repository)
+    : IRequestHandler<GetAllBooksQuery, Result<IEnumerable<BookDto>>>
 {
     public async Task<Result<IEnumerable<BookDto>>> Handle(GetAllBooksQuery request, CancellationToken cancellationToken)
     {
-        var books = await repository.GetAllAsync(cancellationToken);
-        var dtos = books.Select(b => new BookDto(
-            b.Id, b.Title, b.Author, b.Isbn,
-            b.PublicationYear, b.Publisher, b.Genre,
-            b.Description, b.PageCount, b.CoverUrl,
-            b.CreatedAt, b.UpdatedAt
-        ));
-
+        var books = await repository.GetAllAsync(request.GenreId, request.AuthorId, request.ReadingStatus, cancellationToken);
+        var dtos = books.Select(MapToDto);
         return Result<IEnumerable<BookDto>>.Success(dtos);
+    }
+
+    private static BookDto MapToDto(Domain.Entities.Book book)
+    {
+        return new BookDto(
+            book.Id, book.Title,
+            book.BookAuthors.Select(ba => ba.AuthorId).ToArray(),
+            book.BookAuthors.Select(ba => ba.Author?.Name ?? "").ToArray(),
+            book.Isbn, book.PublicationYear, book.Publisher,
+            book.GenreId, book.Genre?.Name ?? "",
+            book.Description, book.PageCount, book.CoverUrl,
+            book.ReadingStatus, book.IsLiked,
+            book.CreatedAt, book.UpdatedAt
+        );
     }
 }

@@ -13,9 +13,12 @@ namespace Yomimono.Api.Controllers;
 public class BooksController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(
+        [FromQuery] Guid? genreId,
+        [FromQuery] Guid? authorId,
+        [FromQuery] string? readingStatus)
     {
-        var result = await mediator.Send(new GetAllBooksQuery());
+        var result = await mediator.Send(new GetAllBooksQuery(genreId, authorId, readingStatus));
         return result.Valid ? Ok(result) : BadRequest(result);
     }
 
@@ -50,6 +53,15 @@ public class BooksController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await mediator.Send(new DeleteBookCommand(id));
+        if (!result.Valid)
+            return NotFound(result);
+        return Ok(result);
+    }
+
+    [HttpPatch("{id:guid}/status")]
+    public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] UpdateBookStatusDto dto)
+    {
+        var result = await mediator.Send(new UpdateBookStatusCommand(id, dto));
         if (!result.Valid)
             return NotFound(result);
         return Ok(result);

@@ -16,10 +16,6 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
             .IsRequired()
             .HasMaxLength(200);
 
-        builder.Property(b => b.Author)
-            .IsRequired()
-            .HasMaxLength(150);
-
         builder.Property(b => b.Isbn)
             .IsRequired()
             .HasMaxLength(20);
@@ -31,16 +27,26 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
             .IsRequired()
             .HasMaxLength(150);
 
-        builder.Property(b => b.Genre)
-            .IsRequired()
-            .HasMaxLength(100);
-
         builder.Property(b => b.Description)
             .HasMaxLength(2000);
 
         builder.Property(b => b.CoverUrl)
             .HasMaxLength(500);
 
-        builder.HasQueryFilter(b => b.DeletedAt == null);
+        builder.Property(b => b.ReadingStatus)
+            .HasMaxLength(20);
+
+        builder.Property(b => b.IsLiked)
+            .HasDefaultValue(false);
+
+        builder.HasOne(b => b.Genre)
+            .WithMany()
+            .HasForeignKey(b => b.GenreId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasMany(b => b.BookAuthors)
+            .WithOne(ba => ba.Book)
+            .HasForeignKey(ba => ba.BookId);
+
     }
 }

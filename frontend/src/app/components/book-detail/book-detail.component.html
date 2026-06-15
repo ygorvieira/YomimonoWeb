@@ -6,13 +6,31 @@
 
   <div *ngIf="book" class="detail-card">
     <h2>{{ book.title }}</h2>
-    <p><strong>Autor:</strong> {{ book.author }}</p>
+    <p><strong>Autor(es):</strong> {{ book.authorNames?.join(', ') }}</p>
     <p><strong>ISBN:</strong> {{ book.isbn }}</p>
     <p><strong>Editora:</strong> {{ book.publisher }}</p>
-    <p><strong>Gênero:</strong> {{ book.genre }}</p>
+    <p><strong>Gênero:</strong> {{ book.genreName }}</p>
     <p><strong>Ano de Publicação:</strong> {{ book.publicationYear }}</p>
     <p><strong>Páginas:</strong> {{ book.pageCount }}</p>
     <p *ngIf="book.description"><strong>Descrição:</strong> {{ book.description }}</p>
+    <p *ngIf="book.coverUrl"><img [src]="book.coverUrl" alt="Capa" class="cover" /></p>
+
+    <div class="status-section">
+      <p>
+        <strong>Status de Leitura:</strong>
+        <select [ngModel]="book.readingStatus" (ngModelChange)="updateReadingStatus($event)">
+          <option [ngValue]="null">--</option>
+          <option value="Lendo">Lendo</option>
+          <option value="Lido">Lido</option>
+          <option value="Abandonado">Abandonado</option>
+        </select>
+      </p>
+      <p>
+        <button (click)="toggleLike()" class="btn-like" [class.liked]="book.isLiked">
+          {{ book.isLiked ? '❤️ Curtido' : '🤍 Curtir' }}
+        </button>
+      </p>
+    </div>
 
     <div class="actions">
       <a [routerLink]="['/books', book.id, 'edit']" class="btn-edit">Editar</a>

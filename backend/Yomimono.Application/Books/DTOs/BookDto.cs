@@ -3,38 +3,51 @@ namespace Yomimono.Application.Books.DTOs;
 public record BookDto(
     Guid Id,
     string Title,
-    string Author,
+    Guid[] AuthorIds,
+    string[] AuthorNames,
     string Isbn,
     int PublicationYear,
     string Publisher,
-    string Genre,
+    Guid GenreId,
+    string GenreName,
     string? Description,
     int PageCount,
     string? CoverUrl,
+    string? ReadingStatus,
+    bool IsLiked,
     DateTime CreatedAt,
     DateTime UpdatedAt
 );
 
 public record CreateBookDto(
     string Title,
-    string Author,
+    Guid[] AuthorIds,
     string Isbn,
     int PublicationYear,
     string Publisher,
-    string Genre,
+    Guid GenreId,
     string? Description,
     int PageCount,
-    string? CoverUrl
+    string? CoverUrl,
+    string? ReadingStatus,
+    bool IsLiked
 );
 
 public record UpdateBookDto(
     string? Title,
-    string? Author,
+    Guid[]? AuthorIds,
     string? Isbn,
     int? PublicationYear,
     string? Publisher,
-    string? Genre,
+    Guid? GenreId,
     string? Description,
     int? PageCount,
-    string? CoverUrl
+    string? CoverUrl,
+    string? ReadingStatus,
+    bool? IsLiked
+);
+
+public record UpdateBookStatusDto(
+    string? ReadingStatus,
+    bool? IsLiked
 );

@@ -21,7 +21,7 @@ public class DeleteBookCommandHandlerTests
     [Fact]
     public async Task Handle_ExistingBook_ShouldReturnValidResult()
     {
-        var (book, _) = Book.Create("Title", "Author", "111", 2000, "Pub", "Gen", 100, null, null);
+        var (book, _) = Book.Create("Title", [Guid.NewGuid()], "111", 2000, "Pub", Guid.NewGuid(), 100, null, null, null, false);
 
         _repositoryMock.Setup(r => r.GetByIdAsync(book!.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(book);

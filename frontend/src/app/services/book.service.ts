@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Book, CreateBookDto, UpdateBookDto, Result } from '../models/book.model';
+import { Book, CreateBookDto, UpdateBookDto, UpdateBookStatusDto, Result } from '../models/book.model';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -10,8 +10,12 @@ export class BookService {
 
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<Result<Book[]>> {
-    return this.http.get<Result<Book[]>>(this.apiUrl);
+  getAll(genreId?: string, authorId?: string, readingStatus?: string): Observable<Result<Book[]>> {
+    let params = new HttpParams();
+    if (genreId) params = params.set('genreId', genreId);
+    if (authorId) params = params.set('authorId', authorId);
+    if (readingStatus) params = params.set('readingStatus', readingStatus);
+    return this.http.get<Result<Book[]>>(this.apiUrl, { params });
   }
 
   getById(id: string): Observable<Result<Book>> {
@@ -24,6 +28,10 @@ export class BookService {
 
   update(id: string, dto: UpdateBookDto): Observable<Result<Book>> {
     return this.http.put<Result<Book>>(`${this.apiUrl}/${id}`, dto);
+  }
+
+  updateStatus(id: string, dto: UpdateBookStatusDto): Observable<Result<Book>> {
+    return this.http.patch<Result<Book>>(`${this.apiUrl}/${id}/status`, dto);
   }
 
   delete(id: string): Observable<Result<boolean>> {

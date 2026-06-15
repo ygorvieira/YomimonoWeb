@@ -5,6 +5,8 @@
       <a *ngIf="!isLoggedIn" routerLink="/login">Login</a>
       <a *ngIf="!isLoggedIn" routerLink="/register">Cadastro</a>
       <a *ngIf="isLoggedIn" routerLink="/books">Livros</a>
+      <a *ngIf="isLoggedIn" routerLink="/authors">Autores</a>
+      <a *ngIf="isLoggedIn" routerLink="/genres">Gêneros</a>
       <span *ngIf="isLoggedIn" class="nav-user">{{ userName }}</span>
       <button *ngIf="isLoggedIn" (click)="logout()" class="btn-logout">Sair</button>
     </div>

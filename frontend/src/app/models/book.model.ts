@@ -1,40 +1,53 @@
 export interface Book {
   id: string;
   title: string;
-  author: string;
+  authorIds: string[];
+  authorNames: string[];
   isbn: string;
   publicationYear: number;
   publisher: string;
-  genre: string;
+  genreId: string;
+  genreName: string;
   description?: string | null;
   pageCount: number;
   coverUrl?: string | null;
+  readingStatus?: string | null;
+  isLiked: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CreateBookDto {
   title: string;
-  author: string;
+  authorIds: string[];
   isbn: string;
   publicationYear: number;
   publisher: string;
-  genre: string;
+  genreId: string;
   description?: string | null;
   pageCount: number;
   coverUrl?: string | null;
+  readingStatus?: string | null;
+  isLiked: boolean;
 }
 
 export interface UpdateBookDto {
   title?: string | null;
-  author?: string | null;
+  authorIds?: string[] | null;
   isbn?: string | null;
   publicationYear?: number | null;
   publisher?: string | null;
-  genre?: string | null;
+  genreId?: string | null;
   description?: string | null;
   pageCount?: number | null;
   coverUrl?: string | null;
+  readingStatus?: string | null;
+  isLiked?: boolean | null;
+}
+
+export interface UpdateBookStatusDto {
+  readingStatus?: string | null;
+  isLiked?: boolean | null;
 }
 
 export interface Result<T> {

@@ -21,12 +21,24 @@ public class GetAllBooksQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldReturnListOfBooks()
     {
-        var (book1, _) = Book.Create("Book 1", "Author 1", "111", 2000, "Pub", "Ficção", 100, null, null);
-        var (book2, _) = Book.Create("Book 2", "Author 2", "222", 2001, "Pub", "Romance", 200, null, null);
+        var authorId = Guid.NewGuid();
+        var genreId = Guid.NewGuid();
+        var genre = Genre.Create("Ficção");
+        var (author, _) = Author.Create("Author 1");
 
-        var books = new List<Book> { book1!, book2! };
+        var (book1, _) = Book.Create("Book 1", [authorId], "111", 2000, "Pub", genreId, 100, null, null, null, false);
+        book1!.Genre = genre;
+        foreach (var ba in book1.BookAuthors)
+            ba.GetType().GetProperty("Author")!.SetValue(ba, author);
 
-        _repositoryMock.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
+        var (book2, _) = Book.Create("Book 2", [authorId], "222", 2001, "Pub", genreId, 200, null, null, null, false);
+        book2!.Genre = genre;
+        foreach (var ba in book2.BookAuthors)
+            ba.GetType().GetProperty("Author")!.SetValue(ba, author);
+
+        var books = new List<Book> { book1, book2 };
+
+        _repositoryMock.Setup(r => r.GetAllAsync(null, null, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(books);
 
         var result = await _handler.Handle(new GetAllBooksQuery(), CancellationToken.None);

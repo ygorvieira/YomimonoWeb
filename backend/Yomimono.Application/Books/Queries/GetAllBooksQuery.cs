@@ -4,4 +4,8 @@ using Yomimono.Application.Common;
 
 namespace Yomimono.Application.Books.Queries;
 
-public record GetAllBooksQuery : IRequest<Result<IEnumerable<BookDto>>>;
+public record GetAllBooksQuery(
+    Guid? GenreId = null,
+    Guid? AuthorId = null,
+    string? ReadingStatus = null
+) : IRequest<Result<IEnumerable<BookDto>>>;

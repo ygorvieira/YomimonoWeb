@@ -5,81 +5,83 @@ namespace Yomimono.Domain.Entities;
 public class Book : BaseEntity
 {
     public string Title { get; private set; } = null!;
-    public string Author { get; private set; } = null!;
     public string Isbn { get; private set; } = null!;
     public int PublicationYear { get; private set; }
     public string Publisher { get; private set; } = null!;
-    public string Genre { get; private set; } = null!;
     public string? Description { get; private set; }
     public int PageCount { get; private set; }
     public string? CoverUrl { get; private set; }
+    public Guid GenreId { get; private set; }
+    public Genre Genre { get; set; } = null!;
+    public string? ReadingStatus { get; private set; }
+    public bool IsLiked { get; private set; }
+    public ICollection<BookAuthor> BookAuthors { get; private set; } = [];
 
     private Book() { }
 
     public static (Book? book, string? error) Create(
-        string title, string author, string isbn,
-        int publicationYear, string publisher, string genre,
-        int pageCount, string? description, string? coverUrl)
+        string title, IEnumerable<Guid> authorIds, string isbn,
+        int publicationYear, string publisher, Guid genreId,
+        int pageCount, string? description, string? coverUrl,
+        string? readingStatus = null, bool isLiked = false)
     {
         if (string.IsNullOrWhiteSpace(title))
             return (null, "O campo título é obrigatório.");
-        if (string.IsNullOrWhiteSpace(author))
-            return (null, "O campo autor é obrigatório.");
+        if (!authorIds.Any())
+            return (null, "É necessário selecionar pelo menos um autor.");
         if (string.IsNullOrWhiteSpace(isbn))
             return (null, "O campo ISBN é obrigatório.");
         if (string.IsNullOrWhiteSpace(publisher))
             return (null, "O campo editora é obrigatório.");
-        if (string.IsNullOrWhiteSpace(genre))
+        if (genreId == Guid.Empty)
             return (null, "O campo gênero é obrigatório.");
         if (title.Length > 200)
             return (null, "O título deve ter no máximo 200 caracteres.");
-        if (author.Length > 150)
-            return (null, "O autor deve ter no máximo 150 caracteres.");
         if (isbn.Length > 20)
             return (null, "O ISBN deve ter no máximo 20 caracteres.");
         if (publisher.Length > 150)
             return (null, "A editora deve ter no máximo 150 caracteres.");
-        if (genre.Length > 100)
-            return (null, "O gênero deve ter no máximo 100 caracteres.");
+        if (readingStatus is not null && readingStatus.Length > 20)
+            return (null, "O status de leitura deve ter no máximo 20 caracteres.");
         if (publicationYear < 1000 || publicationYear > DateTime.UtcNow.Year)
             return (null, $"O ano de publicação deve estar entre 1000 e {DateTime.UtcNow.Year}.");
         if (pageCount <= 0)
             return (null, "O número de páginas deve ser maior que zero.");
 
-        return (new Book
+        var book = new Book
         {
             Id = Guid.NewGuid(),
             Title = title,
-            Author = author,
             Isbn = isbn,
             PublicationYear = publicationYear,
             Publisher = publisher,
-            Genre = genre,
+            GenreId = genreId,
             Description = description,
             PageCount = pageCount,
             CoverUrl = coverUrl,
+            ReadingStatus = readingStatus,
+            IsLiked = isLiked,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
-        }, null);
+        };
+
+        foreach (var authorId in authorIds)
+            book.BookAuthors.Add(new BookAuthor(book.Id, authorId));
+
+        return (book, null);
     }
 
     public string? UpdateDetails(
-        string? title, string? author, string? isbn,
-        int? publicationYear, string? publisher, string? genre,
-        int? pageCount, string? description, string? coverUrl)
+        string? title, IEnumerable<Guid>? authorIds, string? isbn,
+        int? publicationYear, string? publisher, Guid? genreId,
+        int? pageCount, string? description, string? coverUrl,
+        string? readingStatus, bool? isLiked)
     {
         if (title is not null)
         {
             if (title.Length > 200)
                 return "O título deve ter no máximo 200 caracteres.";
             Title = title;
-        }
-
-        if (author is not null)
-        {
-            if (author.Length > 150)
-                return "O autor deve ter no máximo 150 caracteres.";
-            Author = author;
         }
 
         if (isbn is not null)
@@ -96,12 +98,8 @@ public class Book : BaseEntity
             Publisher = publisher;
         }
 
-        if (genre is not null)
-        {
-            if (genre.Length > 100)
-                return "O gênero deve ter no máximo 100 caracteres.";
-            Genre = genre;
-        }
+        if (genreId.HasValue)
+            GenreId = genreId.Value;
 
         if (publicationYear.HasValue)
         {
@@ -124,8 +122,34 @@ public class Book : BaseEntity
         if (coverUrl is not null)
             CoverUrl = coverUrl;
 
+        if (readingStatus is not null)
+        {
+            if (readingStatus.Length > 20)
+                return "O status de leitura deve ter no máximo 20 caracteres.";
+            ReadingStatus = readingStatus;
+        }
+
+        if (isLiked.HasValue)
+            IsLiked = isLiked.Value;
+
+        if (authorIds is not null)
+        {
+            BookAuthors.Clear();
+            foreach (var authorId in authorIds)
+                BookAuthors.Add(new BookAuthor(Id, authorId));
+        }
+
         UpdatedAt = DateTime.UtcNow;
         return null;
+    }
+
+    public void UpdateStatus(string? readingStatus, bool? isLiked)
+    {
+        if (readingStatus is not null)
+            ReadingStatus = readingStatus;
+        if (isLiked.HasValue)
+            IsLiked = isLiked.Value;
+        UpdatedAt = DateTime.UtcNow;
     }
 
     public void Delete()

@@ -13,7 +13,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["ConnectionStrings:DefaultConnection"] =
-                    "Host=localhost;Port=5433;Database=yomimono_test;Username=yomimono;Password=yomimono"
+                    "Host=localhost;Port=5433;Database=yomimono_test;Username=yomimono;Password=yomimono",
+                ["ResetDatabase"] = "true"
             });
         });
     }

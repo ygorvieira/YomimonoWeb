@@ -1,7 +1,28 @@
 <div class="container">
   <h1>Yomimono - Catálogo de Livros</h1>
 
-  <a routerLink="/books/new" class="btn-primary">+ Novo Livro</a>
+  <div class="actions">
+    <a routerLink="/books/new" class="btn-primary">+ Novo Livro</a>
+  </div>
+
+  <div class="filters">
+    <select [(ngModel)]="filterGenreId" (ngModelChange)="onFilterChange()">
+      <option value="">Todos os Gêneros</option>
+      <option *ngFor="let genre of genres" [value]="genre.id">{{ genre.name }}</option>
+    </select>
+
+    <select [(ngModel)]="filterAuthorId" (ngModelChange)="onFilterChange()">
+      <option value="">Todos os Autores</option>
+      <option *ngFor="let author of authors" [value]="author.id">{{ author.name }}</option>
+    </select>
+
+    <select [(ngModel)]="filterReadingStatus" (ngModelChange)="onFilterChange()">
+      <option value="">Todos os Status</option>
+      <option value="Lendo">Lendo</option>
+      <option value="Lido">Lido</option>
+      <option value="Abandonado">Abandonado</option>
+    </select>
+  </div>
 
   <div *ngIf="loading" class="loading">Carregando...</div>
   <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
@@ -10,20 +31,32 @@
     <thead>
       <tr>
         <th>Título</th>
-        <th>Autor</th>
+        <th>Autor(es)</th>
         <th>ISBN</th>
         <th>Gênero</th>
         <th>Ano</th>
+        <th>Status</th>
+        <th>Like</th>
         <th>Ações</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let book of books">
         <td>{{ book.title }}</td>
-        <td>{{ book.author }}</td>
+        <td>{{ book.authorNames?.join(', ') }}</td>
         <td>{{ book.isbn }}</td>
-        <td>{{ book.genre }}</td>
+        <td>{{ book.genreName }}</td>
         <td>{{ book.publicationYear }}</td>
+        <td>
+          <span *ngIf="book.readingStatus" [class]="'status-' + (book.readingStatus | lowercase)">
+            {{ book.readingStatus }}
+          </span>
+        </td>
+        <td>
+          <button (click)="toggleLike(book)" class="btn-like" [class.liked]="book.isLiked">
+            {{ book.isLiked ? '❤️' : '🤍' }}
+          </button>
+        </td>
         <td>
           <a [routerLink]="['/books', book.id]" class="btn-detail">Detalhes</a>
           <a [routerLink]="['/books', book.id, 'edit']" class="btn-edit">Editar</a>

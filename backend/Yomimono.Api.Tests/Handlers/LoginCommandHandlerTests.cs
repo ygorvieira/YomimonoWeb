@@ -1,3 +1,4 @@
+using Yomimono.Domain.Entities;
 using Moq;
 using Shouldly;
 using Yomimono.Application.Auth.Commands;

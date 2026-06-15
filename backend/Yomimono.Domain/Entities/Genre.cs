@@ -18,4 +18,20 @@ public class Genre : BaseEntity
             UpdatedAt = DateTime.UtcNow
         };
     }
+
+    public string? UpdateName(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return "O campo nome é obrigatório.";
+        if (name.Length > 100)
+            return "O nome deve ter no máximo 100 caracteres.";
+        Name = name;
+        UpdatedAt = DateTime.UtcNow;
+        return null;
+    }
+
+    public void Delete()
+    {
+        DeletedAt = DateTime.UtcNow;
+    }
 }

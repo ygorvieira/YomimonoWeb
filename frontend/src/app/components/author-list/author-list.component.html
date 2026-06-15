@@ -1,0 +1,24 @@
+<div class="container">
+  <h2>Autores</h2>
+  <a routerLink="/authors/new" class="btn-primary">+ Novo Autor</a>
+
+  <div *ngIf="loading" class="loading">Carregando...</div>
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+  <table *ngIf="!loading && authors.length > 0">
+    <thead>
+      <tr><th>Nome</th><th>Ações</th></tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let author of authors">
+        <td>{{ author.name }}</td>
+        <td>
+          <a [routerLink]="['/authors', author.id, 'edit']" class="btn-edit">Editar</a>
+          <button (click)="deleteAuthor(author.id)" class="btn-delete">Excluir</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && authors.length === 0" class="empty">Nenhum autor cadastrado.</div>
+</div>

@@ -1,0 +1,24 @@
+<div class="container">
+  <h2>Gêneros</h2>
+  <a routerLink="/genres/new" class="btn-primary">+ Novo Gênero</a>
+
+  <div *ngIf="loading" class="loading">Carregando...</div>
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+  <table *ngIf="!loading && genres.length > 0">
+    <thead>
+      <tr><th>Nome</th><th>Ações</th></tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let genre of genres">
+        <td>{{ genre.name }}</td>
+        <td>
+          <a [routerLink]="['/genres', genre.id, 'edit']" class="btn-edit">Editar</a>
+          <button (click)="deleteGenre(genre.id)" class="btn-delete">Excluir</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && genres.length === 0" class="empty">Nenhum gênero cadastrado.</div>
+</div>

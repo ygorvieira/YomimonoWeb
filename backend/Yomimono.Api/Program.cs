@@ -69,8 +69,14 @@ var app2 = builder2.Build();
 using (var scope2 = app2.Services.CreateScope())
 {
     var db2 = scope2.ServiceProvider.GetRequiredService<AppDbContext>();
-    await db2.Database.MigrateAsync();
+if (builder2.Configuration.GetValue<bool>("ResetDatabase"))
+    await db2.Database.EnsureDeletedAsync();
+    if (db2.Database.IsRelational())
+        await db2.Database.MigrateAsync();
+    else
+        await db2.Database.EnsureCreatedAsync();
     await SeedData.SeedGenresAsync(db2);
+    await SeedData.SeedAuthorsAsync(db2);
 }
 
 if (app2.Environment.IsDevelopment())
