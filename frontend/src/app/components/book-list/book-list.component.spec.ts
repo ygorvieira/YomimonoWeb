@@ -4,6 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { BookListComponent } from './book-list.component';
 import { BookService } from '../../services/book.service';
 import { Result, Book } from '../../models/book.model';
+import { of } from 'rxjs';
 
 describe('BookListComponent', () => {
   let component: BookListComponent;
@@ -47,5 +48,27 @@ describe('BookListComponent', () => {
 
     req.flush(mockResult);
     expect(component.books.length).toBe(1);
+  });
+
+  it('should cycle reading status', () => {
+    const book: Book = {
+      id: '1', title: 'Test', authorIds: ['a1'], authorNames: ['Author'],
+      isbn: '123', publicationYear: 2024, publisher: 'Pub',
+      genreId: 'g1', genreName: 'Genre', pageCount: 100,
+      description: null, coverUrl: null, readingStatus: null, isLiked: false,
+      createdAt: '', updatedAt: ''
+    };
+
+    fixture.detectChanges();
+    const req0 = httpMock.expectOne(`${(service as any).apiUrl}`);
+    req0.flush({ valid: true, data: [book], messages: [], statusCode: 200 });
+
+    component.cycleStatus(book);
+    const req1 = httpMock.expectOne(`${(service as any).apiUrl}/1/status`);
+    expect(req1.request.method).toBe('PATCH');
+    expect(req1.request.body).toEqual({ readingStatus: 'Lendo' });
+    req1.flush({ valid: true, data: { ...book, readingStatus: 'Lendo' }, messages: [], statusCode: 200 });
+
+    expect(book.readingStatus).toBe('Lendo');
   });
 });

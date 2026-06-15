@@ -5,11 +5,11 @@ namespace Yomimono.Domain.Entities;
 public class Book : BaseEntity
 {
     public string Title { get; private set; } = null!;
-    public string Isbn { get; private set; } = null!;
+    public string? Isbn { get; private set; }
     public int PublicationYear { get; private set; }
     public string Publisher { get; private set; } = null!;
     public string? Description { get; private set; }
-    public int PageCount { get; private set; }
+    public int? PageCount { get; private set; }
     public string? CoverUrl { get; private set; }
     public Guid GenreId { get; private set; }
     public Genre Genre { get; set; } = null!;
@@ -20,24 +20,22 @@ public class Book : BaseEntity
     private Book() { }
 
     public static (Book? book, string? error) Create(
-        string title, IEnumerable<Guid> authorIds, string isbn,
+        string title, IEnumerable<Guid> authorIds, string? isbn,
         int publicationYear, string publisher, Guid genreId,
-        int pageCount, string? description, string? coverUrl,
+        int? pageCount, string? description, string? coverUrl,
         string? readingStatus = null, bool isLiked = false)
     {
         if (string.IsNullOrWhiteSpace(title))
             return (null, "O campo título é obrigatório.");
         if (!authorIds.Any())
             return (null, "É necessário selecionar pelo menos um autor.");
-        if (string.IsNullOrWhiteSpace(isbn))
-            return (null, "O campo ISBN é obrigatório.");
         if (string.IsNullOrWhiteSpace(publisher))
             return (null, "O campo editora é obrigatório.");
         if (genreId == Guid.Empty)
             return (null, "O campo gênero é obrigatório.");
         if (title.Length > 200)
             return (null, "O título deve ter no máximo 200 caracteres.");
-        if (isbn.Length > 20)
+        if (isbn is not null && isbn.Length > 20)
             return (null, "O ISBN deve ter no máximo 20 caracteres.");
         if (publisher.Length > 150)
             return (null, "A editora deve ter no máximo 150 caracteres.");
@@ -45,7 +43,7 @@ public class Book : BaseEntity
             return (null, "O status de leitura deve ter no máximo 20 caracteres.");
         if (publicationYear < 1000 || publicationYear > DateTime.UtcNow.Year)
             return (null, $"O ano de publicação deve estar entre 1000 e {DateTime.UtcNow.Year}.");
-        if (pageCount <= 0)
+        if (pageCount is <= 0)
             return (null, "O número de páginas deve ser maior que zero.");
 
         var book = new Book

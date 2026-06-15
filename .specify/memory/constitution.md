@@ -1,9 +1,8 @@
 <!--
 Sync Impact Report
-- Version: 0.0.0 → 1.0.0 (initial adoption)
-- New constitution created from template
-- Added all 5 principles, tech stack section, workflow section, governance
-- Templates requiring updates: none (first constitution)
+- Version: 1.0.0 → 1.1.0 (MINOR: added standardized Gitflow with branch/conventions)
+- Modified sections: Development Workflow (fully expanded to Standardized Gitflow)
+- Templates requiring updates: none (no .specify/templates/ directory)
 -->
 # Yomimono Constitution
 
@@ -39,6 +38,11 @@ Commands and Queries MUST be separated via MediatR. The `Result<T>` type MUST in
 `Valid` (bool), `Data` (T | null), `Messages` (string[]), `StatusCode` (int). Domain
 entities MUST inherit from `BaseEntity` (Id, CreatedAt, UpdatedAt, DeletedAt).
 
+### VI. Standardized Gitflow (NON-NEGOTIABLE)
+All development MUST follow a standardized Gitflow with strict branch naming, commit
+conventions, and PR discipline. This principle exists to ensure auditability, trace-
+ability, and consistent collaboration across the project.
+
 ## Technology Stack & Constraints
 
 | Category | Technology |
@@ -58,18 +62,64 @@ All containers MUST use Alpine-based images where available. PostgreSQL MUST use
 5433 externally to avoid conflicts. Backend MUST listen on port 8080 internally.
 Frontend MUST be served via Nginx on port 80 internally.
 
-## Development Workflow
+## Standardized Gitflow
 
-Git feature branch flow MUST be used. All work MUST follow this order:
-1. Write tests (fail) → Implement code → Verify tests pass
-2. Run full test suite locally before committing
-3. Push branch → CI runs on GitHub Actions
-4. Create Pull Request → Code review required
-5. Merge only after CI passes and review is approved
+### Branch Naming
 
-Commits MUST be atomic and descriptive. Constitution compliance MUST be verified on
-each PR. Complexity must be justified — if a pattern adds more than 3 layers or 5
-files for a single endpoint, document the rationale.
+| Branch Type | Pattern | Example |
+|---|---|---|
+| Feature | `feature/<initials>-<short-description>` | `feature/yg-book-filters` |
+| Fix | `fix/<initials>-<short-description>` | `fix/yg-null-ref-error` |
+| Hotfix | `hotfix/<initials>-<short-description>` | `hotfix/yg-security-vuln` |
+| Release | `release/<version>` | `release/1.2.0` |
+
+All branches MUST branch from `main`. Feature, fix, and hotfix branches MUST be
+deleted after merge. Release branches MAY remain for traceability.
+
+### Commit Conventions
+
+Every commit MUST follow Conventional Commits format:
+
+```
+<type>(<scope>): <short-description>
+
+<body> (optional)
+```
+
+Allowed types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`.
+Scope examples: `api`, `domain`, `frontend`, `infra`, `specs`.
+Breaking changes MUST append `!` before the colon (e.g., `feat(api)!: ...`).
+
+The commit body (when present) MUST explain the *why*, not the *what*. Commits MUST
+be atomic: one logical change per commit. Squash commits on merge.
+
+### Pull Request Workflow
+
+1. Create feature/fix branch from `main` following branch naming conventions
+2. Write tests (must fail) → Implement code → Verify tests pass
+3. Run full test suite (`dotnet test` + `ng test`) locally before pushing
+4. Push branch and verify CI passes on GitHub Actions
+5. Open Pull Request against `main`
+6. Title MUST follow Conventional Commits format
+7. Description MUST include: what changed, why, how tested, screenshots (UI)
+8. Code review MUST be performed by at least one other contributor
+9. Merge ONLY after: CI passes, review approved, no merge conflicts
+10. Use squash merge (single commit into `main`)
+
+### Release Flow
+
+1. Create `release/<version>` branch from `main`
+2. Bump version numbers, update changelog
+3. Run full test suite and CI
+4. Open PR from release branch to `main`
+5. After merge, tag the merge commit with `v<version>`
+6. Delete release branch after tagging
+
+### Complexity Discipline
+
+If a single change adds more than 3 file layers or 5 files across the stack,
+document the rationale in the PR description. Constitution compliance MUST be
+verified on each PR.
 
 ## Governance
 
@@ -83,4 +133,4 @@ follows semantic versioning:
 All PRs/reviews MUST verify constitution compliance. Non-compliance MUST be flagged
 and documented before merge. Use AGENTS.md for runtime development guidance.
 
-**Version**: 1.0.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-06-14
+**Version**: 1.1.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-06-15

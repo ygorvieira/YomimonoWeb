@@ -17,5 +17,5 @@ shell commands, and other important information, read the current plan
 
 ### Constitution
 See `.specify/memory/constitution.md` for full governance rules.
-Key principles: .NET 10, mandatory TDD, API integration tests, CI on GitHub Actions, CQRS with Result<T>.
+Key principles: .NET 10, mandatory TDD, API integration tests, CI on GitHub Actions, CQRS with Result<T>, standardized Gitflow.
 <!-- SPECKIT END -->

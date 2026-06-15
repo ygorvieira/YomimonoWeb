@@ -15,18 +15,39 @@
 
     <div class="form-group">
       <label>Autor(es) *</label>
-      <div *ngFor="let author of authors" class="checkbox-item">
-        <label>
-          <input type="checkbox" [checked]="model.authorIds.includes(author.id)"
-                 (change)="toggleAuthor(author.id)" />
+      <div class="author-tags" *ngIf="model.authorIds.length > 0">
+        <span class="author-tag" *ngFor="let author of selectedAuthors">
           {{ author.name }}
-        </label>
+          <span class="author-tag-remove" (click)="removeAuthor(author.id)">&times;</span>
+        </span>
+      </div>
+      <div class="author-select">
+        <button type="button" class="author-select-trigger" [class.open]="authorDropdownOpen"
+                (click)="authorDropdownOpen = !authorDropdownOpen">
+          {{ selectedAuthorNames() }}
+        </button>
+        <div class="author-dropdown" *ngIf="authorDropdownOpen">
+          <div class="author-search">
+            <input [(ngModel)]="authorSearchTerm" name="authorSearch" placeholder="Buscar autor..." />
+          </div>
+          <div class="author-dropdown-list">
+            <label class="author-dropdown-item" *ngFor="let author of filteredAuthors">
+              <input type="checkbox" [checked]="model.authorIds.includes(author.id)"
+                     (change)="toggleAuthor(author.id)" />
+              {{ author.name }}
+            </label>
+          </div>
+          <div class="author-add-inline">
+            <input [(ngModel)]="newAuthorName" name="newAuthor" placeholder="Novo autor..." />
+            <button type="button" class="btn-primary" (click)="addNewAuthor()">Adicionar</button>
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="form-group">
-      <label for="isbn">ISBN *</label>
-      <input id="isbn" name="isbn" [(ngModel)]="model.isbn" required />
+      <label for="isbn">ISBN (opcional)</label>
+      <input id="isbn" name="isbn" [(ngModel)]="model.isbn" />
     </div>
 
     <div class="form-group">
@@ -48,8 +69,8 @@
     </div>
 
     <div class="form-group">
-      <label for="pageCount">Número de Páginas *</label>
-      <input id="pageCount" name="pageCount" type="number" [(ngModel)]="model.pageCount" required />
+      <label for="pageCount">Número de Páginas (opcional)</label>
+      <input id="pageCount" name="pageCount" type="number" [(ngModel)]="model.pageCount" />
     </div>
 
     <div class="form-group">

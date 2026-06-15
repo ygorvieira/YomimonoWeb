@@ -3,13 +3,13 @@ export interface Book {
   title: string;
   authorIds: string[];
   authorNames: string[];
-  isbn: string;
+  isbn?: string | null;
   publicationYear: number;
   publisher: string;
   genreId: string;
   genreName: string;
   description?: string | null;
-  pageCount: number;
+  pageCount?: number | null;
   coverUrl?: string | null;
   readingStatus?: string | null;
   isLiked: boolean;
@@ -20,12 +20,12 @@ export interface Book {
 export interface CreateBookDto {
   title: string;
   authorIds: string[];
-  isbn: string;
+  isbn?: string | null;
   publicationYear: number;
   publisher: string;
   genreId: string;
   description?: string | null;
-  pageCount: number;
+  pageCount?: number | null;
   coverUrl?: string | null;
   readingStatus?: string | null;
   isLiked: boolean;

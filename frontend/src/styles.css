@@ -123,3 +123,188 @@ th { background: #f8f9fa; }
 
 .auth-link { margin-top: 16px; text-align: center; }
 .auth-link a { color: #3498db; }
+
+.filters {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.filters select {
+  padding: 10px 12px;
+  font-size: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  min-width: 200px;
+  background: #fff;
+  color: #333;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  user-select: none;
+  transition: all 0.2s;
+}
+
+.status-badge:hover {
+  opacity: 0.8;
+}
+
+.status-badge.null { background: #ecf0f1; color: #7f8c8d; border-color: #bdc3c7; }
+.status-badge.Lendo { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; }
+.status-badge.Lido { background: #d4edda; color: #155724; border-color: #84c98e; }
+.status-badge.Abandonado { background: #fce4e4; color: #b91c1c; border-color: #f5a5a5; }
+
+.btn-like {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-like.liked {
+  border-color: #e74c3c;
+  background: #fce4e4;
+}
+
+.author-select {
+  position: relative;
+}
+
+.author-select-trigger {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.author-select-trigger::after {
+  content: '\25BC';
+  font-size: 10px;
+  color: #7f8c8d;
+}
+
+.author-select-trigger.open::after {
+  content: '\25B2';
+}
+
+.author-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.author-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-radius: 16px;
+  font-size: 13px;
+}
+
+.author-tag-remove {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+  margin-left: 2px;
+}
+
+.author-tag-remove:hover {
+  color: #b91c1c;
+}
+
+.author-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  max-height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+.author-search {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.author-search input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+.author-dropdown-list {
+  overflow-y: auto;
+  flex: 1;
+  max-height: 160px;
+}
+
+.author-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.author-dropdown-item:hover {
+  background: #f0f7ff;
+}
+
+.author-dropdown-item input {
+  margin: 0;
+}
+
+.author-add-inline {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  border-top: 1px solid #eee;
+}
+
+.author-add-inline input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.author-add-inline button {
+  padding: 8px 16px;
+  white-space: nowrap;
+}

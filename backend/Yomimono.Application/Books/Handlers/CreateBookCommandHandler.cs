@@ -19,9 +19,12 @@ public class CreateBookCommandHandler(
 {
     public async Task<Result<BookDto>> Handle(CreateBookCommand request, CancellationToken cancellationToken)
     {
-        var isUnique = await uniquenessChecker.IsIsbnUniqueAsync(request.Book.Isbn, null, cancellationToken);
-        if (!isUnique)
-            return Result<BookDto>.Failure("Já existe um livro cadastrado com este ISBN.");
+        if (request.Book.Isbn is not null)
+        {
+            var isUnique = await uniquenessChecker.IsIsbnUniqueAsync(request.Book.Isbn, null, cancellationToken);
+            if (!isUnique)
+                return Result<BookDto>.Failure("Já existe um livro cadastrado com este ISBN.");
+        }
 
         var genre = await genreRepository.GetByIdAsync(request.Book.GenreId, cancellationToken);
         if (genre is null)
