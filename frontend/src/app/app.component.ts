@@ -31,6 +31,10 @@ export class AppComponent implements OnInit {
   }
 
   logout(): void {
+    const refreshToken = this.authService.getRefreshToken();
+    if (refreshToken) {
+      this.authService.revokeToken().subscribe();
+    }
     this.authService.logout();
     this.router.navigate(['/login']);
   }

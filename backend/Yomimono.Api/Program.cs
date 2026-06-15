@@ -84,3 +84,5 @@ app2.UseAuthorization();
 app2.MapControllers();
 
 await app2.RunAsync();
+
+public partial class Program { }

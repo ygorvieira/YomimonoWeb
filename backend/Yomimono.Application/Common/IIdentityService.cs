@@ -7,4 +7,6 @@ public interface IIdentityService
 {
     Task<Result<AuthResponse>> RegisterAsync(RegisterDto dto, CancellationToken cancellationToken = default);
     Task<Result<AuthResponse>> LoginAsync(LoginDto dto, CancellationToken cancellationToken = default);
+    Task<Result<AuthResponse>> RefreshTokenAsync(RefreshRequestDto dto, CancellationToken cancellationToken = default);
+    Task<Result<bool>> RevokeTokenAsync(RefreshRequestDto dto, CancellationToken cancellationToken = default);
 }

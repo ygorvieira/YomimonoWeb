@@ -21,7 +21,11 @@ public static class DependencyInjection
     {
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+        return services.AddInfrastructureServices(configuration);
+    }
 
+    private static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+    {
         services.AddIdentity<User, IdentityRole<Guid>>(options =>
         {
             options.Password.RequireNonAlphanumeric = false;

@@ -26,4 +26,20 @@ public class AuthController(IMediator mediator) : ControllerBase
             return Unauthorized(result);
         return Ok(result);
     }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh([FromBody] RefreshRequestDto dto)
+    {
+        var result = await mediator.Send(new RefreshTokenCommand(dto));
+        if (!result.Valid)
+            return Unauthorized(result);
+        return Ok(result);
+    }
+
+    [HttpPost("revoke")]
+    public async Task<IActionResult> Revoke([FromBody] RefreshRequestDto dto)
+    {
+        var result = await mediator.Send(new RevokeTokenCommand(dto));
+        return Ok(result);
+    }
 }

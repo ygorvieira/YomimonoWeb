@@ -22,7 +22,7 @@ public class LoginCommandHandlerTests
     public async Task Handle_ValidLogin_ShouldReturnValidResult()
     {
         var dto = new LoginDto("user@email.com", "123456");
-        var response = new AuthResponse("token123", "user@email.com", "user");
+        var response = new AuthResponse("access-token", "refresh-token", "user@email.com", "user");
 
         _identityMock.Setup(x => x.LoginAsync(dto, It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result<AuthResponse>.Success(response));
@@ -31,7 +31,7 @@ public class LoginCommandHandlerTests
 
         result.Valid.ShouldBeTrue();
         result.Data.ShouldNotBeNull();
-        result.Data.Token.ShouldNotBeNullOrEmpty();
+        result.Data.AccessToken.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]

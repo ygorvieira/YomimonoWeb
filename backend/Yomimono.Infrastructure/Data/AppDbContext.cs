@@ -11,6 +11,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
 {
     public DbSet<Book> Books => Set<Book>();
     public DbSet<Genre> Genres => Set<Genre>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

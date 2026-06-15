@@ -22,7 +22,7 @@ public class RegisterCommandHandlerTests
     public async Task Handle_ValidRegistration_ShouldReturnValidResult()
     {
         var dto = new RegisterDto("user@email.com", "123456", "user");
-        var response = new AuthResponse("token123", "user@email.com", "user");
+        var response = new AuthResponse("access-token", "refresh-token", "user@email.com", "user");
 
         _identityMock.Setup(x => x.RegisterAsync(dto, It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result<AuthResponse>.Created(response));

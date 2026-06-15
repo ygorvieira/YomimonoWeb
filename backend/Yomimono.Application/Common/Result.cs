@@ -1,14 +1,20 @@
 using System.Net;
+using System.Text.Json.Serialization;
 
 namespace Yomimono.Application.Common;
 
 public class Result<T>
 {
+    [JsonInclude]
     public bool Valid { get; private set; }
+    [JsonInclude]
     public T? Data { get; private set; }
+    [JsonInclude]
     public List<string> Messages { get; private set; } = [];
+    [JsonInclude]
     public HttpStatusCode StatusCode { get; private set; }
 
+    [JsonConstructor]
     private Result() { }
 
     public static Result<T> Success(T data, string? message = null)

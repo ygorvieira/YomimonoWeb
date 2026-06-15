@@ -25,35 +25,81 @@ describe('AuthService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should login and store token', () => {
+  it('should login and store tokens', () => {
     service.login({ email: 'test@test.com', password: '123456' }).subscribe(result => {
       expect(result.valid).toBeTrue();
-      expect(localStorage.getItem('token')).toBe('jwt_token');
+      expect(localStorage.getItem('accessToken')).toBe('jwt_token');
+      expect(localStorage.getItem('refreshToken')).toBe('refresh_token');
     });
 
     const req = httpMock.expectOne(`/api/auth/login`);
     expect(req.request.method).toBe('POST');
     req.flush({
       valid: true,
-      data: { token: 'jwt_token', email: 'test@test.com', userName: 'test' },
+      data: { accessToken: 'jwt_token', refreshToken: 'refresh_token', email: 'test@test.com', userName: 'test' },
       messages: [],
       statusCode: 200
     });
   });
 
   it('should logout and clear storage', () => {
-    localStorage.setItem('token', 'jwt_token');
+    localStorage.setItem('accessToken', 'jwt_token');
+    localStorage.setItem('refreshToken', 'refresh_token');
     localStorage.setItem('email', 'test@test.com');
     localStorage.setItem('userName', 'test');
 
     service.logout();
 
-    expect(localStorage.getItem('token')).toBeNull();
+    expect(localStorage.getItem('accessToken')).toBeNull();
+    expect(localStorage.getItem('refreshToken')).toBeNull();
     expect(service.isLoggedIn()).toBeFalse();
   });
 
   it('should return token from storage', () => {
-    localStorage.setItem('token', 'my_token');
+    localStorage.setItem('accessToken', 'my_token');
     expect(service.getToken()).toBe('my_token');
+  });
+
+  it('should return refresh token from storage', () => {
+    localStorage.setItem('refreshToken', 'my_refresh_token');
+    expect(service.getRefreshToken()).toBe('my_refresh_token');
+  });
+
+  it('should refresh token', () => {
+    localStorage.setItem('refreshToken', 'valid_refresh_token');
+
+    service.refreshToken().subscribe(result => {
+      expect(result).not.toBeNull();
+      expect(result!.valid).toBeTrue();
+    });
+
+    const req = httpMock.expectOne(`/api/auth/refresh`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ refreshToken: 'valid_refresh_token' });
+    req.flush({
+      valid: true,
+      data: { accessToken: 'new_token', refreshToken: 'new_refresh', email: 'test@test.com', userName: 'test' },
+      messages: [],
+      statusCode: 200
+    });
+
+    expect(localStorage.getItem('accessToken')).toBe('new_token');
+  });
+
+  it('should revoke token', () => {
+    localStorage.setItem('refreshToken', 'valid_refresh_token');
+
+    service.revokeToken().subscribe(result => {
+      expect(result.valid).toBeTrue();
+    });
+
+    const req = httpMock.expectOne(`/api/auth/revoke`);
+    expect(req.request.method).toBe('POST');
+    req.flush({
+      valid: true,
+      data: true,
+      messages: [],
+      statusCode: 200
+    });
   });
 });

@@ -22,3 +22,21 @@ public class LoginCommandHandler(IIdentityService identityService)
         return await identityService.LoginAsync(request.Dto, cancellationToken);
     }
 }
+
+public class RefreshTokenCommandHandler(IIdentityService identityService)
+    : IRequestHandler<RefreshTokenCommand, Result<AuthResponse>>
+{
+    public async Task<Result<AuthResponse>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+    {
+        return await identityService.RefreshTokenAsync(request.Dto, cancellationToken);
+    }
+}
+
+public class RevokeTokenCommandHandler(IIdentityService identityService)
+    : IRequestHandler<RevokeTokenCommand, Result<bool>>
+{
+    public async Task<Result<bool>> Handle(RevokeTokenCommand request, CancellationToken cancellationToken)
+    {
+        return await identityService.RevokeTokenAsync(request.Dto, cancellationToken);
+    }
+}

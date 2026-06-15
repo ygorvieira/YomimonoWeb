@@ -30,7 +30,7 @@ describe('RegisterComponent', () => {
   it('should call register on submit', () => {
     authService.register.and.returnValue(of({
       valid: true,
-      data: { token: 'token', email: 'test@test.com', userName: 'test' },
+      data: { accessToken: 'token', refreshToken: 'refresh', email: 'test@test.com', userName: 'test' },
       messages: [],
       statusCode: 201
     }));

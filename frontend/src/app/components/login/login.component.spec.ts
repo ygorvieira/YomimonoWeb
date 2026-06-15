@@ -30,7 +30,7 @@ describe('LoginComponent', () => {
   it('should call login on submit', () => {
     authService.login.and.returnValue(of({
       valid: true,
-      data: { token: 'token', email: 'test@test.com', userName: 'test' },
+      data: { accessToken: 'token', refreshToken: 'refresh', email: 'test@test.com', userName: 'test' },
       messages: [],
       statusCode: 200
     }));
