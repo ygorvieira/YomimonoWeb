@@ -15,7 +15,7 @@ describe('BookFormComponent', () => {
 
   beforeEach(async () => {
     const bookSpy = jasmine.createSpyObj('BookService', ['create', 'getById']);
-    const authorSpy = jasmine.createSpyObj('AuthorService', ['getAll']);
+    const authorSpy = jasmine.createSpyObj('AuthorService', ['getAll', 'create']);
     const genreSpy = jasmine.createSpyObj('GenreService', ['getAll']);
 
     authorSpy.getAll.and.returnValue(of({ valid: true, data: [], messages: [], statusCode: 200 }));
@@ -56,5 +56,43 @@ describe('BookFormComponent', () => {
 
     component.onSubmit();
     expect(bookService.create).toHaveBeenCalled();
+  });
+
+  it('should toggle author selection', () => {
+    component.toggleAuthor('a1');
+    expect(component.model.authorIds).toContain('a1');
+    component.toggleAuthor('a1');
+    expect(component.model.authorIds).not.toContain('a1');
+  });
+
+  it('should remove author', () => {
+    component.model.authorIds = ['a1', 'a2'];
+    component.removeAuthor('a1');
+    expect(component.model.authorIds).toEqual(['a2']);
+  });
+
+  it('should add new author and select it', () => {
+    const authorSpy = TestBed.inject(AuthorService) as jasmine.SpyObj<AuthorService>;
+    authorSpy.create.and.returnValue(of({
+      valid: true,
+      data: { id: 'new1', name: 'Novo Autor', createdAt: '', updatedAt: '' },
+      messages: [],
+      statusCode: 201
+    }));
+
+    component.newAuthorName = 'Novo Autor';
+    component.addNewAuthor();
+
+    expect(authorSpy.create).toHaveBeenCalledWith({ name: 'Novo Autor' });
+    expect(component.authors.some(a => a.id === 'new1')).toBeTrue();
+    expect(component.model.authorIds).toContain('new1');
+    expect(component.newAuthorName).toBe('');
+  });
+
+  it('should not add empty author', () => {
+    component.newAuthorName = '  ';
+    component.addNewAuthor();
+    const authorSpy = TestBed.inject(AuthorService) as jasmine.SpyObj<AuthorService>;
+    expect(authorSpy.create).not.toHaveBeenCalled();
   });
 });
