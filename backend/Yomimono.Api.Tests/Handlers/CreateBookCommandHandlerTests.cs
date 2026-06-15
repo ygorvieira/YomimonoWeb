@@ -89,4 +89,71 @@ public class CreateBookCommandHandlerTests
 
         result.Valid.ShouldBeFalse();
     }
+
+    [Fact]
+    public async Task Handle_NullIsbn_ShouldReturnValidResult()
+    {
+        var dto = new CreateBookDto(
+            "Sem ISBN", [_authorId], null,
+            2024, "Editora", _genreId, null, 100, null, null, false
+        );
+
+        var (author, _) = Author.Create("Autor");
+
+        _genreRepositoryMock.Setup(r => r.GetByIdAsync(_genreId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Genre.Create("Ficção"));
+        _authorRepositoryMock.Setup(r => r.GetByIdAsync(_authorId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(author);
+
+        var result = await _handler.Handle(new CreateBookCommand(dto), CancellationToken.None);
+
+        result.Valid.ShouldBeTrue();
+        result.Data.ShouldNotBeNull();
+        result.Data.Isbn.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task Handle_NullPageCount_ShouldReturnValidResult()
+    {
+        var dto = new CreateBookDto(
+            "Sem páginas", [_authorId], "9788535902778",
+            2024, "Editora", _genreId, null, null, null, null, false
+        );
+
+        var (author, _) = Author.Create("Autor");
+
+        _uniquenessMock.Setup(r => r.IsIsbnUniqueAsync(It.IsAny<string>(), null, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+        _genreRepositoryMock.Setup(r => r.GetByIdAsync(_genreId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Genre.Create("Ficção"));
+        _authorRepositoryMock.Setup(r => r.GetByIdAsync(_authorId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(author);
+
+        var result = await _handler.Handle(new CreateBookCommand(dto), CancellationToken.None);
+
+        result.Valid.ShouldBeTrue();
+        result.Data.ShouldNotBeNull();
+        result.Data.PageCount.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task Handle_NullIsbn_ShouldSkipUniquenessCheck()
+    {
+        var dto = new CreateBookDto(
+            "Sem ISBN", [_authorId], null,
+            2024, "Editora", _genreId, null, 100, null, null, false
+        );
+
+        var (author, _) = Author.Create("Autor");
+
+        _genreRepositoryMock.Setup(r => r.GetByIdAsync(_genreId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Genre.Create("Ficção"));
+        _authorRepositoryMock.Setup(r => r.GetByIdAsync(_authorId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(author);
+
+        var result = await _handler.Handle(new CreateBookCommand(dto), CancellationToken.None);
+
+        result.Valid.ShouldBeTrue();
+        _uniquenessMock.Verify(r => r.IsIsbnUniqueAsync(It.IsAny<string>(), null, It.IsAny<CancellationToken>()), Times.Never);
+    }
 }
