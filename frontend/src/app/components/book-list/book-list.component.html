@@ -32,7 +32,6 @@
       <tr>
         <th>Título</th>
         <th>Autor(es)</th>
-        <th>ISBN</th>
         <th>Gênero</th>
         <th>Ano</th>
         <th>Status</th>
@@ -44,7 +43,6 @@
       <tr *ngFor="let book of books">
         <td>{{ book.title }}</td>
         <td>{{ book.authorNames?.join(', ') }}</td>
-        <td>{{ book.isbn }}</td>
         <td>{{ book.genreName }}</td>
         <td>{{ book.publicationYear }}</td>
         <td>
