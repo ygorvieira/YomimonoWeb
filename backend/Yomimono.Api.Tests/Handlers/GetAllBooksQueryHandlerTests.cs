@@ -26,15 +26,19 @@ public class GetAllBooksQueryHandlerTests
         var genre = Genre.Create("Ficção");
         var (author, _) = Author.Create("Author 1");
 
-        var (book1, _) = Book.Create("Book 1", [authorId], "111", 2000, "Pub", genreId, 100, null, null, null, false);
-        book1!.Genre = genre;
+        var (book1, _) = Book.Create("Book 1", [authorId], "111", 2000, "Pub", [genreId], 100, null, null, null, false);
+        book1!.Genres.Add(new BookGenre(book1.Id, genreId));
         foreach (var ba in book1.BookAuthors)
             ba.GetType().GetProperty("Author")!.SetValue(ba, author);
+        foreach (var bg in book1.Genres)
+            bg.GetType().GetProperty("Genre")!.SetValue(bg, genre);
 
-        var (book2, _) = Book.Create("Book 2", [authorId], "222", 2001, "Pub", genreId, 200, null, null, null, false);
-        book2!.Genre = genre;
+        var (book2, _) = Book.Create("Book 2", [authorId], "222", 2001, "Pub", [genreId], 200, null, null, null, false);
+        book2!.Genres.Add(new BookGenre(book2.Id, genreId));
         foreach (var ba in book2.BookAuthors)
             ba.GetType().GetProperty("Author")!.SetValue(ba, author);
+        foreach (var bg in book2.Genres)
+            bg.GetType().GetProperty("Genre")!.SetValue(bg, genre);
 
         var books = new List<Book> { book1, book2 };
 

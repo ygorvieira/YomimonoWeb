@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { BookListComponent } from './components/book-list/book-list.component';
+import { ReportComponent } from './components/report/report.component';
 import { BookDetailComponent } from './components/book-detail/book-detail.component';
 import { BookFormComponent } from './components/book-form/book-form.component';
 import { LoginComponent } from './components/login/login.component';
@@ -23,5 +24,6 @@ export const routes: Routes = [
   { path: 'authors/:id/edit', component: AuthorFormComponent, canActivate: [authGuard] },
   { path: 'genres', component: GenreListComponent, canActivate: [authGuard] },
   { path: 'genres/new', component: GenreFormComponent, canActivate: [authGuard] },
-  { path: 'genres/:id/edit', component: GenreFormComponent, canActivate: [authGuard] }
+  { path: 'genres/:id/edit', component: GenreFormComponent, canActivate: [authGuard] },
+  { path: 'reports', component: ReportComponent, canActivate: [authGuard] }
 ];

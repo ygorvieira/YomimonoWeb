@@ -12,7 +12,7 @@ public class BookRepository(AppDbContext context) : IBookRepository
         return await context.Books
             .IgnoreQueryFilters()
             .Include(b => b.BookAuthors).ThenInclude(ba => ba.Author)
-            .Include(b => b.Genre)
+            .Include(b => b.Genres).ThenInclude(bg => bg.Genre)
             .FirstOrDefaultAsync(b => b.Id == id && b.DeletedAt == null, cancellationToken);
     }
 
@@ -21,11 +21,11 @@ public class BookRepository(AppDbContext context) : IBookRepository
         var query = context.Books
             .IgnoreQueryFilters()
             .Include(b => b.BookAuthors).ThenInclude(ba => ba.Author)
-            .Include(b => b.Genre)
+            .Include(b => b.Genres).ThenInclude(bg => bg.Genre)
             .Where(b => b.DeletedAt == null);
 
         if (genreId.HasValue)
-            query = query.Where(b => b.GenreId == genreId.Value);
+            query = query.Where(b => b.Genres.Any(bg => bg.GenreId == genreId.Value));
 
         if (authorId.HasValue)
             query = query.Where(b => b.BookAuthors.Any(ba => ba.AuthorId == authorId.Value));
@@ -60,5 +60,14 @@ public class BookRepository(AppDbContext context) : IBookRepository
         return await context.Books
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(b => b.Isbn == isbn && b.DeletedAt == null, cancellationToken);
+    }
+
+    public async Task<IEnumerable<Book>> GetAllForReportsAsync(CancellationToken cancellationToken = default)
+    {
+        return await context.Books
+            .IgnoreQueryFilters()
+            .Include(b => b.Genres).ThenInclude(bg => bg.Genre)
+            .Where(b => b.DeletedAt == null)
+            .ToListAsync(cancellationToken);
     }
 }

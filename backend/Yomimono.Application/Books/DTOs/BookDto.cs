@@ -5,16 +5,19 @@ public record BookDto(
     string Title,
     Guid[] AuthorIds,
     string[] AuthorNames,
+    Guid[] OrganizerIds,
+    string[] OrganizerNames,
     string? Isbn,
     int PublicationYear,
     string Publisher,
-    Guid GenreId,
-    string GenreName,
+    Guid[] GenreIds,
+    string[] GenreNames,
     string? Description,
     int? PageCount,
     string? CoverUrl,
     string? ReadingStatus,
     bool IsLiked,
+    int ReReadCount,
     DateTime CreatedAt,
     DateTime UpdatedAt
 );
@@ -25,12 +28,13 @@ public record CreateBookDto(
     string? Isbn,
     int PublicationYear,
     string Publisher,
-    Guid GenreId,
+    Guid[] GenreIds,
     string? Description,
     int? PageCount,
     string? CoverUrl,
     string? ReadingStatus,
-    bool IsLiked
+    bool IsLiked,
+    Guid[]? OrganizerIds
 );
 
 public record UpdateBookDto(
@@ -39,12 +43,13 @@ public record UpdateBookDto(
     string? Isbn,
     int? PublicationYear,
     string? Publisher,
-    Guid? GenreId,
+    Guid[]? GenreIds,
     string? Description,
     int? PageCount,
     string? CoverUrl,
     string? ReadingStatus,
-    bool? IsLiked
+    bool? IsLiked,
+    Guid[]? OrganizerIds
 );
 
 public record UpdateBookStatusDto(

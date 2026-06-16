@@ -10,7 +10,11 @@ public class BookAuthorConfiguration : IEntityTypeConfiguration<BookAuthor>
     {
         builder.ToTable("BookAuthors");
 
-        builder.HasKey(ba => new { ba.BookId, ba.AuthorId });
+        builder.HasKey(ba => new { ba.BookId, ba.AuthorId, ba.Role });
+
+        builder.Property(ba => ba.Role)
+            .IsRequired()
+            .HasMaxLength(20);
 
         builder.HasOne(ba => ba.Book)
             .WithMany(b => b.BookAuthors)

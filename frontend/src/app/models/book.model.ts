@@ -3,16 +3,19 @@ export interface Book {
   title: string;
   authorIds: string[];
   authorNames: string[];
+  organizerIds: string[];
+  organizerNames: string[];
   isbn?: string | null;
   publicationYear: number;
   publisher: string;
-  genreId: string;
-  genreName: string;
+  genreIds: string[];
+  genreNames: string[];
   description?: string | null;
   pageCount?: number | null;
   coverUrl?: string | null;
   readingStatus?: string | null;
   isLiked: boolean;
+  reReadCount: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -23,12 +26,13 @@ export interface CreateBookDto {
   isbn?: string | null;
   publicationYear: number;
   publisher: string;
-  genreId: string;
+  genreIds: string[];
   description?: string | null;
   pageCount?: number | null;
   coverUrl?: string | null;
   readingStatus?: string | null;
   isLiked: boolean;
+  organizerIds?: string[] | null;
 }
 
 export interface UpdateBookDto {
@@ -37,12 +41,13 @@ export interface UpdateBookDto {
   isbn?: string | null;
   publicationYear?: number | null;
   publisher?: string | null;
-  genreId?: string | null;
+  genreIds?: string[] | null;
   description?: string | null;
   pageCount?: number | null;
   coverUrl?: string | null;
   readingStatus?: string | null;
   isLiked?: boolean | null;
+  organizerIds?: string[] | null;
 }
 
 export interface UpdateBookStatusDto {

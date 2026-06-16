@@ -7,6 +7,7 @@
       <a *ngIf="isLoggedIn" routerLink="/books">Livros</a>
       <a *ngIf="isLoggedIn" routerLink="/authors">Autores</a>
       <a *ngIf="isLoggedIn" routerLink="/genres">Gêneros</a>
+      <a *ngIf="isLoggedIn" routerLink="/reports">Relatórios</a>
       <span *ngIf="isLoggedIn" class="nav-user">{{ userName }}</span>
       <button *ngIf="isLoggedIn" (click)="logout()" class="btn-logout">Sair</button>
     </div>

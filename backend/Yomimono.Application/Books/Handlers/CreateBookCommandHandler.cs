@@ -26,15 +26,26 @@ public class CreateBookCommandHandler(
                 return Result<BookDto>.Failure("Já existe um livro cadastrado com este ISBN.");
         }
 
-        var genre = await genreRepository.GetByIdAsync(request.Book.GenreId, cancellationToken);
-        if (genre is null)
-            return Result<BookDto>.Failure("Gênero não encontrado.");
+        var genreIds = request.Book.GenreIds.Distinct().ToArray();
+        if (genreIds.Length == 0)
+            return Result<BookDto>.Failure("É necessário selecionar pelo menos um gênero.");
+
+        var genres = new List<Genre>();
+        foreach (var genreId in genreIds)
+        {
+            var genre = await genreRepository.GetByIdAsync(genreId, cancellationToken);
+            if (genre is null)
+                return Result<BookDto>.Failure($"Gênero com ID {genreId} não encontrado.");
+            genres.Add(genre);
+        }
 
         var authorIds = request.Book.AuthorIds.Distinct().ToArray();
-        if (authorIds.Length == 0)
-            return Result<BookDto>.Failure("É necessário selecionar pelo menos um autor.");
+        var organizerIds = request.Book.OrganizerIds?.Distinct().ToArray() ?? [];
 
-        foreach (var authorId in authorIds)
+        if (authorIds.Length == 0 && organizerIds.Length == 0)
+            return Result<BookDto>.Failure("É necessário selecionar pelo menos um autor ou organizador.");
+
+        foreach (var authorId in authorIds.Concat(organizerIds))
         {
             var author = await authorRepository.GetByIdAsync(authorId, cancellationToken);
             if (author is null)
@@ -44,28 +55,32 @@ public class CreateBookCommandHandler(
         var (book, error) = Book.Create(
             request.Book.Title, authorIds, request.Book.Isbn,
             request.Book.PublicationYear, request.Book.Publisher,
-            request.Book.GenreId, request.Book.PageCount,
+            genreIds, request.Book.PageCount,
             request.Book.Description, request.Book.CoverUrl,
-            request.Book.ReadingStatus, request.Book.IsLiked
+            request.Book.ReadingStatus, request.Book.IsLiked,
+            organizerIds
         );
 
         if (error is not null)
             return Result<BookDto>.Failure(error);
 
         await bookRepository.AddAsync(book!, cancellationToken);
-        return Result<BookDto>.Created(MapToDto(book!, genre), "Livro cadastrado com sucesso.");
+        return Result<BookDto>.Created(MapToDto(book!, genres), "Livro cadastrado com sucesso.");
     }
 
-    private static BookDto MapToDto(Book book, Genre genre)
+    private static BookDto MapToDto(Book book, List<Genre> genres)
     {
         return new BookDto(
             book.Id, book.Title,
-            book.BookAuthors.Select(ba => ba.AuthorId).ToArray(),
-            book.BookAuthors.Select(ba => ba.Author?.Name ?? "").ToArray(),
+            book.BookAuthors.Where(ba => ba.Role == "Author").Select(ba => ba.AuthorId).ToArray(),
+            book.BookAuthors.Where(ba => ba.Role == "Author").Select(ba => ba.Author?.Name ?? "").ToArray(),
+            book.BookAuthors.Where(ba => ba.Role == "Organizer").Select(ba => ba.AuthorId).ToArray(),
+            book.BookAuthors.Where(ba => ba.Role == "Organizer").Select(ba => ba.Author?.Name ?? "").ToArray(),
             book.Isbn, book.PublicationYear, book.Publisher,
-            book.GenreId, genre.Name,
+            genres.Select(g => g.Id).ToArray(),
+            genres.Select(g => g.Name).ToArray(),
             book.Description, book.PageCount, book.CoverUrl,
-            book.ReadingStatus, book.IsLiked,
+            book.ReadingStatus, book.IsLiked, book.ReReadCount,
             book.CreatedAt, book.UpdatedAt
         );
     }

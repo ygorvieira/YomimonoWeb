@@ -11,28 +11,29 @@ public class Book : BaseEntity
     public string? Description { get; private set; }
     public int? PageCount { get; private set; }
     public string? CoverUrl { get; private set; }
-    public Guid GenreId { get; private set; }
-    public Genre Genre { get; set; } = null!;
     public string? ReadingStatus { get; private set; }
     public bool IsLiked { get; private set; }
+    public int ReReadCount { get; private set; }
     public ICollection<BookAuthor> BookAuthors { get; private set; } = [];
+    public ICollection<BookGenre> Genres { get; private set; } = [];
 
     private Book() { }
 
     public static (Book? book, string? error) Create(
         string title, IEnumerable<Guid> authorIds, string? isbn,
-        int publicationYear, string publisher, Guid genreId,
+        int publicationYear, string publisher, IEnumerable<Guid> genreIds,
         int? pageCount, string? description, string? coverUrl,
-        string? readingStatus = null, bool isLiked = false)
+        string? readingStatus = null, bool isLiked = false,
+        IEnumerable<Guid>? organizerIds = null)
     {
         if (string.IsNullOrWhiteSpace(title))
             return (null, "O campo título é obrigatório.");
-        if (!authorIds.Any())
-            return (null, "É necessário selecionar pelo menos um autor.");
+        if (!authorIds.Any() && (organizerIds is null || !organizerIds.Any()))
+            return (null, "É necessário selecionar pelo menos um autor ou organizador.");
         if (string.IsNullOrWhiteSpace(publisher))
             return (null, "O campo editora é obrigatório.");
-        if (genreId == Guid.Empty)
-            return (null, "O campo gênero é obrigatório.");
+        if (!genreIds.Any())
+            return (null, "É necessário selecionar pelo menos um gênero.");
         if (title.Length > 200)
             return (null, "O título deve ter no máximo 200 caracteres.");
         if (isbn is not null && isbn.Length > 20)
@@ -53,7 +54,6 @@ public class Book : BaseEntity
             Isbn = isbn,
             PublicationYear = publicationYear,
             Publisher = publisher,
-            GenreId = genreId,
             Description = description,
             PageCount = pageCount,
             CoverUrl = coverUrl,
@@ -64,16 +64,26 @@ public class Book : BaseEntity
         };
 
         foreach (var authorId in authorIds)
-            book.BookAuthors.Add(new BookAuthor(book.Id, authorId));
+            book.BookAuthors.Add(new BookAuthor(book.Id, authorId, "Author"));
+
+        if (organizerIds is not null)
+        {
+            foreach (var organizerId in organizerIds)
+                book.BookAuthors.Add(new BookAuthor(book.Id, organizerId, "Organizer"));
+        }
+
+        foreach (var genreId in genreIds)
+            book.Genres.Add(new BookGenre(book.Id, genreId));
 
         return (book, null);
     }
 
     public string? UpdateDetails(
         string? title, IEnumerable<Guid>? authorIds, string? isbn,
-        int? publicationYear, string? publisher, Guid? genreId,
+        int? publicationYear, string? publisher, IEnumerable<Guid>? genreIds,
         int? pageCount, string? description, string? coverUrl,
-        string? readingStatus, bool? isLiked)
+        string? readingStatus, bool? isLiked,
+        IEnumerable<Guid>? organizerIds = null)
     {
         if (title is not null)
         {
@@ -95,9 +105,6 @@ public class Book : BaseEntity
                 return "A editora deve ter no máximo 150 caracteres.";
             Publisher = publisher;
         }
-
-        if (genreId.HasValue)
-            GenreId = genreId.Value;
 
         if (publicationYear.HasValue)
         {
@@ -130,11 +137,28 @@ public class Book : BaseEntity
         if (isLiked.HasValue)
             IsLiked = isLiked.Value;
 
-        if (authorIds is not null)
+        if (authorIds is not null || organizerIds is not null)
         {
             BookAuthors.Clear();
-            foreach (var authorId in authorIds)
-                BookAuthors.Add(new BookAuthor(Id, authorId));
+
+            if (authorIds is not null)
+            {
+                foreach (var authorId in authorIds)
+                    BookAuthors.Add(new BookAuthor(Id, authorId, "Author"));
+            }
+
+            if (organizerIds is not null)
+            {
+                foreach (var organizerId in organizerIds)
+                    BookAuthors.Add(new BookAuthor(Id, organizerId, "Organizer"));
+            }
+        }
+
+        if (genreIds is not null)
+        {
+            Genres.Clear();
+            foreach (var genreId in genreIds)
+                Genres.Add(new BookGenre(Id, genreId));
         }
 
         UpdatedAt = DateTime.UtcNow;

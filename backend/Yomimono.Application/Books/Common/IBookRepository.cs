@@ -10,4 +10,5 @@ public interface IBookRepository
     void Update(Book entity);
     void Delete(Book entity);
     Task<Book?> GetByIsbnAsync(string isbn, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Book>> GetAllForReportsAsync(CancellationToken cancellationToken = default);
 }

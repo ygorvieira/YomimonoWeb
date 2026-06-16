@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Yomimono.Infrastructure.Data;
@@ -11,9 +12,11 @@ using Yomimono.Infrastructure.Data;
 namespace Yomimono.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260616212106_AddMultiGenreAndReReadStatus")]
+    partial class AddMultiGenreAndReReadStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -253,11 +256,7 @@ namespace Yomimono.Infrastructure.Data.Migrations
                     b.Property<Guid>("AuthorId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Role")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.HasKey("BookId", "AuthorId", "Role");
+                    b.HasKey("BookId", "AuthorId");
 
                     b.HasIndex("AuthorId");
 
