@@ -47,17 +47,19 @@ public class UpdateBookCommandHandler(
             }
         }
 
-        if (request.Book.AuthorIds is not null)
+        if (request.Book.AuthorIds is not null || request.Book.OrganizerIds is not null)
         {
-            var authorIds = request.Book.AuthorIds.Distinct().ToArray();
-            if (authorIds.Length == 0)
-                return Result<BookDto>.Failure("É necessário selecionar pelo menos um autor.");
+            var authorIds = request.Book.AuthorIds?.Distinct().ToArray() ?? [];
+            var organizerIds = request.Book.OrganizerIds?.Distinct().ToArray() ?? [];
 
-            foreach (var authorId in authorIds)
+            if (authorIds.Length == 0 && organizerIds.Length == 0)
+                return Result<BookDto>.Failure("É necessário selecionar pelo menos um autor ou organizador.");
+
+            foreach (var id in authorIds.Concat(organizerIds))
             {
-                var author = await authorRepository.GetByIdAsync(authorId, cancellationToken);
+                var author = await authorRepository.GetByIdAsync(id, cancellationToken);
                 if (author is null)
-                    return Result<BookDto>.Failure($"Autor com ID {authorId} não encontrado.");
+                    return Result<BookDto>.Failure($"Autor com ID {id} não encontrado.");
             }
         }
 
@@ -66,7 +68,8 @@ public class UpdateBookCommandHandler(
             request.Book.PublicationYear, request.Book.Publisher,
             request.Book.GenreIds, request.Book.PageCount,
             request.Book.Description, request.Book.CoverUrl,
-            request.Book.ReadingStatus, request.Book.IsLiked
+            request.Book.ReadingStatus, request.Book.IsLiked,
+            request.Book.OrganizerIds
         );
 
         if (error is not null)
@@ -82,8 +85,10 @@ public class UpdateBookCommandHandler(
     {
         return new BookDto(
             book.Id, book.Title,
-            book.BookAuthors.Select(ba => ba.AuthorId).ToArray(),
-            book.BookAuthors.Select(ba => ba.Author?.Name ?? "").ToArray(),
+            book.BookAuthors.Where(ba => ba.Role == "Author").Select(ba => ba.AuthorId).ToArray(),
+            book.BookAuthors.Where(ba => ba.Role == "Author").Select(ba => ba.Author?.Name ?? "").ToArray(),
+            book.BookAuthors.Where(ba => ba.Role == "Organizer").Select(ba => ba.AuthorId).ToArray(),
+            book.BookAuthors.Where(ba => ba.Role == "Organizer").Select(ba => ba.Author?.Name ?? "").ToArray(),
             book.Isbn, book.PublicationYear, book.Publisher,
             book.Genres.Select(bg => bg.GenreId).ToArray(),
             book.Genres.Select(bg => bg.Genre?.Name ?? "").ToArray(),

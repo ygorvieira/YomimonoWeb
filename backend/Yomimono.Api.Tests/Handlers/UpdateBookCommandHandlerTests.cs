@@ -40,12 +40,12 @@ public class UpdateBookCommandHandlerTests
             1900, "Original Publisher", [_genreId], 100, null, null, null, false
         );
 
-        _bookRepositoryMock.Setup(r => r.GetByIdAsync(book.Id, It.IsAny<CancellationToken>()))
+        _bookRepositoryMock.Setup(r => r.GetByIdAsync(book!.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(book);
         _uniquenessMock.Setup(r => r.IsIsbnUniqueAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var updateDto = new UpdateBookDto("Updated Title", null, null, null, null, null, null, null, null, null, null);
+        var updateDto = new UpdateBookDto("Updated Title", null, null, null, null, null, null, null, null, null, null, null);
 
         var result = await _handler.Handle(new UpdateBookCommand(book.Id, updateDto), CancellationToken.None);
 
@@ -60,7 +60,7 @@ public class UpdateBookCommandHandlerTests
         _bookRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Book?)null);
 
-        var updateDto = new UpdateBookDto("Title", null, null, null, null, null, null, null, null, null, null);
+        var updateDto = new UpdateBookDto("Title", null, null, null, null, null, null, null, null, null, null, null);
         var result = await _handler.Handle(new UpdateBookCommand(Guid.NewGuid(), updateDto), CancellationToken.None);
 
         result.Valid.ShouldBeFalse();
@@ -76,7 +76,7 @@ public class UpdateBookCommandHandlerTests
         _uniquenessMock.Setup(r => r.IsIsbnUniqueAsync("9788535902779", book!.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
 
-        var updateDto = new UpdateBookDto(null, null, "9788535902779", null, null, null, null, null, null, null, null);
+        var updateDto = new UpdateBookDto(null, null, "9788535902779", null, null, null, null, null, null, null, null, null);
         var result = await _handler.Handle(new UpdateBookCommand(book!.Id, updateDto), CancellationToken.None);
 
         result.Valid.ShouldBeFalse();

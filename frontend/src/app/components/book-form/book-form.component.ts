@@ -36,7 +36,8 @@ export class BookFormComponent implements OnInit {
     pageCount: 0,
     coverUrl: null,
     readingStatus: null,
-    isLiked: false
+    isLiked: false,
+    organizerIds: []
   };
 
   constructor(
@@ -88,7 +89,8 @@ export class BookFormComponent implements OnInit {
             pageCount: book.pageCount,
             coverUrl: book.coverUrl,
             readingStatus: book.readingStatus,
-            isLiked: book.isLiked
+            isLiked: book.isLiked,
+            organizerIds: book.organizerIds
           };
         } else {
           this.errorMessage = result.messages?.join(', ') || 'Livro não encontrado.';
@@ -103,14 +105,22 @@ export class BookFormComponent implements OnInit {
   }
 
   authorDropdownOpen = false;
+  organizerDropdownOpen = false;
   genreDropdownOpen = false;
   authorSearchTerm = '';
+  organizerSearchTerm = '';
   genreSearchTerm = '';
   newAuthorName = '';
 
   get filteredAuthors(): Author[] {
     if (!this.authorSearchTerm.trim()) return this.authors;
     const term = this.authorSearchTerm.toLowerCase();
+    return this.authors.filter(a => a.name.toLowerCase().includes(term));
+  }
+
+  get filteredOrganizers(): Author[] {
+    if (!this.organizerSearchTerm.trim()) return this.authors;
+    const term = this.organizerSearchTerm.toLowerCase();
     return this.authors.filter(a => a.name.toLowerCase().includes(term));
   }
 
@@ -124,6 +134,10 @@ export class BookFormComponent implements OnInit {
     return this.authors.filter(a => this.model.authorIds.includes(a.id));
   }
 
+  get selectedOrganizers(): Author[] {
+    return this.authors.filter(a => (this.model.organizerIds ?? []).includes(a.id));
+  }
+
   get selectedGenres(): Genre[] {
     return this.genres.filter(g => this.model.genreIds.includes(g.id));
   }
@@ -133,6 +147,9 @@ export class BookFormComponent implements OnInit {
     const target = event.target as HTMLElement;
     if (this.authorDropdownOpen && !target.closest('.author-select')) {
       this.authorDropdownOpen = false;
+    }
+    if (this.organizerDropdownOpen && !target.closest('.organizer-select')) {
+      this.organizerDropdownOpen = false;
     }
     if (this.genreDropdownOpen && !target.closest('.genre-select')) {
       this.genreDropdownOpen = false;
@@ -152,6 +169,20 @@ export class BookFormComponent implements OnInit {
     this.model.authorIds = this.model.authorIds.filter(id => id !== authorId);
   }
 
+  toggleOrganizer(authorId: string): void {
+    if (!this.model.organizerIds) this.model.organizerIds = [];
+    const idx = this.model.organizerIds.indexOf(authorId);
+    if (idx >= 0) {
+      this.model.organizerIds.splice(idx, 1);
+    } else {
+      this.model.organizerIds.push(authorId);
+    }
+  }
+
+  removeOrganizer(authorId: string): void {
+    this.model.organizerIds = (this.model.organizerIds ?? []).filter(id => id !== authorId);
+  }
+
   toggleGenre(genreId: string): void {
     const idx = this.model.genreIds.indexOf(genreId);
     if (idx >= 0) {
@@ -168,6 +199,11 @@ export class BookFormComponent implements OnInit {
   selectedAuthorNames(): string {
     const names = this.authors.filter(a => this.model.authorIds.includes(a.id)).map(a => a.name);
     return names.length > 0 ? names.join(', ') : 'Selecionar autores';
+  }
+
+  selectedOrganizerNames(): string {
+    const names = this.authors.filter(a => (this.model.organizerIds ?? []).includes(a.id)).map(a => a.name);
+    return names.length > 0 ? names.join(', ') : 'Selecionar organizadores';
   }
 
   selectedGenreNames(): string {
@@ -202,6 +238,7 @@ export class BookFormComponent implements OnInit {
     const payload = { ...this.model };
     if (!payload.isbn) payload.isbn = null;
     if (!payload.pageCount) payload.pageCount = null;
+    if (payload.organizerIds && payload.organizerIds.length === 0) payload.organizerIds = null;
 
     if (this.isEditMode && this.bookId) {
       const dto: UpdateBookDto = payload;

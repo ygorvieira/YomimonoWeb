@@ -45,6 +45,7 @@ describe('BookFormComponent', () => {
       valid: true,
       data: {
         id: '1', title: 'Test', authorIds: ['a1'], authorNames: ['Author'],
+        organizerIds: [], organizerNames: [],
         isbn: '123', publicationYear: 2024, publisher: 'Pub',
         genreIds: ['g1'], genreNames: ['Ficção'], pageCount: 100,
         description: null, coverUrl: null, readingStatus: null, isLiked: false,
@@ -69,6 +70,13 @@ describe('BookFormComponent', () => {
     component.model.authorIds = ['a1', 'a2'];
     component.removeAuthor('a1');
     expect(component.model.authorIds).toEqual(['a2']);
+  });
+
+  it('should toggle organizer selection', () => {
+    component.toggleOrganizer('o1');
+    expect(component.model.organizerIds).toContain('o1');
+    component.toggleOrganizer('o1');
+    expect(component.model.organizerIds).not.toContain('o1');
   });
 
   it('should add new author and select it', () => {

@@ -22,8 +22,10 @@ public class GetBookByIdQueryHandler(IBookRepository repository)
     {
         return new BookDto(
             book.Id, book.Title,
-            book.BookAuthors.Select(ba => ba.AuthorId).ToArray(),
-            book.BookAuthors.Select(ba => ba.Author?.Name ?? "").ToArray(),
+            book.BookAuthors.Where(ba => ba.Role == "Author").Select(ba => ba.AuthorId).ToArray(),
+            book.BookAuthors.Where(ba => ba.Role == "Author").Select(ba => ba.Author?.Name ?? "").ToArray(),
+            book.BookAuthors.Where(ba => ba.Role == "Organizer").Select(ba => ba.AuthorId).ToArray(),
+            book.BookAuthors.Where(ba => ba.Role == "Organizer").Select(ba => ba.Author?.Name ?? "").ToArray(),
             book.Isbn, book.PublicationYear, book.Publisher,
             book.Genres.Select(bg => bg.GenreId).ToArray(),
             book.Genres.Select(bg => bg.Genre?.Name ?? "").ToArray(),

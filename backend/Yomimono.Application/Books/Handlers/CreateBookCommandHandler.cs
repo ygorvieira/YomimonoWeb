@@ -40,10 +40,12 @@ public class CreateBookCommandHandler(
         }
 
         var authorIds = request.Book.AuthorIds.Distinct().ToArray();
-        if (authorIds.Length == 0)
-            return Result<BookDto>.Failure("É necessário selecionar pelo menos um autor.");
+        var organizerIds = request.Book.OrganizerIds?.Distinct().ToArray() ?? [];
 
-        foreach (var authorId in authorIds)
+        if (authorIds.Length == 0 && organizerIds.Length == 0)
+            return Result<BookDto>.Failure("É necessário selecionar pelo menos um autor ou organizador.");
+
+        foreach (var authorId in authorIds.Concat(organizerIds))
         {
             var author = await authorRepository.GetByIdAsync(authorId, cancellationToken);
             if (author is null)
@@ -55,7 +57,8 @@ public class CreateBookCommandHandler(
             request.Book.PublicationYear, request.Book.Publisher,
             genreIds, request.Book.PageCount,
             request.Book.Description, request.Book.CoverUrl,
-            request.Book.ReadingStatus, request.Book.IsLiked
+            request.Book.ReadingStatus, request.Book.IsLiked,
+            organizerIds
         );
 
         if (error is not null)
@@ -69,8 +72,10 @@ public class CreateBookCommandHandler(
     {
         return new BookDto(
             book.Id, book.Title,
-            book.BookAuthors.Select(ba => ba.AuthorId).ToArray(),
-            book.BookAuthors.Select(ba => ba.Author?.Name ?? "").ToArray(),
+            book.BookAuthors.Where(ba => ba.Role == "Author").Select(ba => ba.AuthorId).ToArray(),
+            book.BookAuthors.Where(ba => ba.Role == "Author").Select(ba => ba.Author?.Name ?? "").ToArray(),
+            book.BookAuthors.Where(ba => ba.Role == "Organizer").Select(ba => ba.AuthorId).ToArray(),
+            book.BookAuthors.Where(ba => ba.Role == "Organizer").Select(ba => ba.Author?.Name ?? "").ToArray(),
             book.Isbn, book.PublicationYear, book.Publisher,
             genres.Select(g => g.Id).ToArray(),
             genres.Select(g => g.Name).ToArray(),

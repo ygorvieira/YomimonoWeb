@@ -3,6 +3,8 @@ export interface Book {
   title: string;
   authorIds: string[];
   authorNames: string[];
+  organizerIds: string[];
+  organizerNames: string[];
   isbn?: string | null;
   publicationYear: number;
   publisher: string;
@@ -30,6 +32,7 @@ export interface CreateBookDto {
   coverUrl?: string | null;
   readingStatus?: string | null;
   isLiked: boolean;
+  organizerIds?: string[] | null;
 }
 
 export interface UpdateBookDto {
@@ -44,6 +47,7 @@ export interface UpdateBookDto {
   coverUrl?: string | null;
   readingStatus?: string | null;
   isLiked?: boolean | null;
+  organizerIds?: string[] | null;
 }
 
 export interface UpdateBookStatusDto {

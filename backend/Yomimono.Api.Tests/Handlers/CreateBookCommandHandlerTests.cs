@@ -37,7 +37,7 @@ public class CreateBookCommandHandlerTests
     {
         var dto = new CreateBookDto(
             "Dom Casmurro", [_authorId], "9788535902778",
-            1899, "Editora Garnier", [_genreId], null, 256, null, null, false
+            1899, "Editora Garnier", [_genreId], null, 256, null, null, false, null
         );
 
         var (author, _) = Author.Create("Machado de Assis");
@@ -61,7 +61,7 @@ public class CreateBookCommandHandlerTests
     {
         var dto = new CreateBookDto(
             "Dom Casmurro", [_authorId], "9788535902778",
-            1899, "Editora Garnier", [_genreId], null, 256, null, null, false
+            1899, "Editora Garnier", [_genreId], null, 256, null, null, false, null
         );
 
         _uniquenessMock.Setup(r => r.IsIsbnUniqueAsync("9788535902778", null, It.IsAny<CancellationToken>()))
@@ -77,7 +77,7 @@ public class CreateBookCommandHandlerTests
     {
         var dto = new CreateBookDto(
             "Dom Casmurro", [_authorId], "9788535902778",
-            1899, "Editora Garnier", [_genreId], null, 256, null, null, false
+            1899, "Editora Garnier", [_genreId], null, 256, null, null, false, null
         );
 
         _uniquenessMock.Setup(r => r.IsIsbnUniqueAsync(It.IsAny<string>(), null, It.IsAny<CancellationToken>()))
@@ -95,7 +95,7 @@ public class CreateBookCommandHandlerTests
     {
         var dto = new CreateBookDto(
             "Sem ISBN", [_authorId], null,
-            2024, "Editora", [_genreId], null, 100, null, null, false
+            2024, "Editora", [_genreId], null, 100, null, null, false, null
         );
 
         var (author, _) = Author.Create("Autor");
@@ -117,7 +117,7 @@ public class CreateBookCommandHandlerTests
     {
         var dto = new CreateBookDto(
             "Sem páginas", [_authorId], "9788535902778",
-            2024, "Editora", [_genreId], null, null, null, null, false
+            2024, "Editora", [_genreId], null, null, null, null, false, null
         );
 
         var (author, _) = Author.Create("Autor");
@@ -141,7 +141,7 @@ public class CreateBookCommandHandlerTests
     {
         var dto = new CreateBookDto(
             "Sem ISBN", [_authorId], null,
-            2024, "Editora", [_genreId], null, 100, null, null, false
+            2024, "Editora", [_genreId], null, 100, null, null, false, null
         );
 
         var (author, _) = Author.Create("Autor");

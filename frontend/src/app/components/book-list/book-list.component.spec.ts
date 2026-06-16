@@ -37,6 +37,7 @@ describe('BookListComponent', () => {
       valid: true,
       data: [{
         id: '1', title: 'Dom Casmurro', authorIds: ['a1'], authorNames: ['Machado de Assis'],
+        organizerIds: [], organizerNames: [],
         isbn: '9788535902778', publicationYear: 1899, publisher: 'Garnier',
         genreIds: ['g1'], genreNames: ['Romance'], pageCount: 256,
         description: null, coverUrl: null, readingStatus: null, isLiked: false,
@@ -53,6 +54,7 @@ describe('BookListComponent', () => {
   it('should cycle reading status', () => {
     const book: Book = {
       id: '1', title: 'Test', authorIds: ['a1'], authorNames: ['Author'],
+      organizerIds: [], organizerNames: [],
       isbn: '123', publicationYear: 2024, publisher: 'Pub',
       genreIds: ['g1'], genreNames: ['Genre'], pageCount: 100,
       description: null, coverUrl: null, readingStatus: null, isLiked: false,

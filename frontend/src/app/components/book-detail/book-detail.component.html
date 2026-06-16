@@ -6,7 +6,8 @@
 
   <div *ngIf="book" class="detail-card">
     <h2>{{ book.title }}</h2>
-    <p><strong>Autor(es):</strong> {{ book.authorNames?.join(', ') }}</p>
+    <p *ngIf="book.authorNames?.length"><strong>Autor(es):</strong> {{ book.authorNames?.join(', ') }}</p>
+    <p *ngIf="book.organizerNames?.length"><strong>Organizador(es):</strong> {{ book.organizerNames?.join(', ') }}</p>
     <p><strong>Editora:</strong> {{ book.publisher }}</p>
     <p><strong>Gênero(s):</strong> {{ book.genreNames?.join(', ') }}</p>
     <p><strong>Ano de Publicação:</strong> {{ book.publicationYear }}</p>

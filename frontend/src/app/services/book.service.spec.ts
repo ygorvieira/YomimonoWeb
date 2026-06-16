@@ -20,6 +20,7 @@ describe('BookService', () => {
 
   const mockBook: Book = {
     id: '1', title: 'Dom Casmurro', authorIds: ['a1'], authorNames: ['Machado'],
+    organizerIds: [], organizerNames: [],
     isbn: '123', publicationYear: 1899, publisher: 'Garnier',
     genreIds: ['g1'], genreNames: ['Romance'], pageCount: 256,
     coverUrl: null, description: null, readingStatus: null, isLiked: false,
@@ -61,7 +62,7 @@ describe('BookService', () => {
       title: 'New Book', authorIds: ['a1'], isbn: '9788535902778',
       publicationYear: 2024, publisher: 'Pub', genreIds: ['g1'],
       pageCount: 100, description: null, coverUrl: null,
-      readingStatus: null, isLiked: false
+      readingStatus: null, isLiked: false, organizerIds: null
     };
 
     service.create(dto).subscribe(result => expect(result.valid).toBeTrue());

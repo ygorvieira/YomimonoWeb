@@ -23,12 +23,13 @@ public class Book : BaseEntity
         string title, IEnumerable<Guid> authorIds, string? isbn,
         int publicationYear, string publisher, IEnumerable<Guid> genreIds,
         int? pageCount, string? description, string? coverUrl,
-        string? readingStatus = null, bool isLiked = false)
+        string? readingStatus = null, bool isLiked = false,
+        IEnumerable<Guid>? organizerIds = null)
     {
         if (string.IsNullOrWhiteSpace(title))
             return (null, "O campo título é obrigatório.");
-        if (!authorIds.Any())
-            return (null, "É necessário selecionar pelo menos um autor.");
+        if (!authorIds.Any() && (organizerIds is null || !organizerIds.Any()))
+            return (null, "É necessário selecionar pelo menos um autor ou organizador.");
         if (string.IsNullOrWhiteSpace(publisher))
             return (null, "O campo editora é obrigatório.");
         if (!genreIds.Any())
@@ -63,7 +64,13 @@ public class Book : BaseEntity
         };
 
         foreach (var authorId in authorIds)
-            book.BookAuthors.Add(new BookAuthor(book.Id, authorId));
+            book.BookAuthors.Add(new BookAuthor(book.Id, authorId, "Author"));
+
+        if (organizerIds is not null)
+        {
+            foreach (var organizerId in organizerIds)
+                book.BookAuthors.Add(new BookAuthor(book.Id, organizerId, "Organizer"));
+        }
 
         foreach (var genreId in genreIds)
             book.Genres.Add(new BookGenre(book.Id, genreId));
@@ -75,7 +82,8 @@ public class Book : BaseEntity
         string? title, IEnumerable<Guid>? authorIds, string? isbn,
         int? publicationYear, string? publisher, IEnumerable<Guid>? genreIds,
         int? pageCount, string? description, string? coverUrl,
-        string? readingStatus, bool? isLiked)
+        string? readingStatus, bool? isLiked,
+        IEnumerable<Guid>? organizerIds = null)
     {
         if (title is not null)
         {
@@ -129,11 +137,21 @@ public class Book : BaseEntity
         if (isLiked.HasValue)
             IsLiked = isLiked.Value;
 
-        if (authorIds is not null)
+        if (authorIds is not null || organizerIds is not null)
         {
             BookAuthors.Clear();
-            foreach (var authorId in authorIds)
-                BookAuthors.Add(new BookAuthor(Id, authorId));
+
+            if (authorIds is not null)
+            {
+                foreach (var authorId in authorIds)
+                    BookAuthors.Add(new BookAuthor(Id, authorId, "Author"));
+            }
+
+            if (organizerIds is not null)
+            {
+                foreach (var organizerId in organizerIds)
+                    BookAuthors.Add(new BookAuthor(Id, organizerId, "Organizer"));
+            }
         }
 
         if (genreIds is not null)

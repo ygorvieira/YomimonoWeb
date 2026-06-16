@@ -34,6 +34,7 @@
       <tr>
         <th>Título</th>
         <th>Autor(es)</th>
+        <th>Org.</th>
         <th>Gênero(s)</th>
         <th>Ano</th>
         <th>Status</th>
@@ -45,6 +46,7 @@
       <tr *ngFor="let book of books">
         <td>{{ book.title }}</td>
         <td>{{ book.authorNames?.join(', ') }}</td>
+        <td>{{ book.organizerNames?.join(', ') }}</td>
         <td>{{ book.genreNames?.join(', ') }}</td>
         <td>{{ book.publicationYear }}</td>
         <td>

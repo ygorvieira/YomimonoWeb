@@ -46,6 +46,34 @@
     </div>
 
     <div class="form-group">
+      <label>Organizador(es)</label>
+      <div class="organizer-tags" *ngIf="(model.organizerIds ?? []).length > 0">
+        <span class="organizer-tag" *ngFor="let org of selectedOrganizers">
+          {{ org.name }}
+          <span class="organizer-tag-remove" (click)="removeOrganizer(org.id)">&times;</span>
+        </span>
+      </div>
+      <div class="organizer-select">
+        <button type="button" class="organizer-select-trigger" [class.open]="organizerDropdownOpen"
+                (click)="organizerDropdownOpen = !organizerDropdownOpen">
+          {{ selectedOrganizerNames() }}
+        </button>
+        <div class="organizer-dropdown" *ngIf="organizerDropdownOpen">
+          <div class="organizer-search">
+            <input [(ngModel)]="organizerSearchTerm" name="organizerSearch" placeholder="Buscar organizador..." />
+          </div>
+          <div class="organizer-dropdown-list">
+            <label class="organizer-dropdown-item" *ngFor="let author of filteredOrganizers">
+              <input type="checkbox" [checked]="(model.organizerIds ?? []).includes(author.id)"
+                     (change)="toggleOrganizer(author.id)" />
+              {{ author.name }}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
       <label for="isbn">ISBN (opcional)</label>
       <input id="isbn" name="isbn" [(ngModel)]="model.isbn" />
     </div>
