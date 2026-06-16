@@ -31,7 +31,7 @@ export class BookFormComponent implements OnInit {
     isbn: '',
     publicationYear: new Date().getFullYear(),
     publisher: '',
-    genreId: '',
+    genreIds: [],
     description: null,
     pageCount: 0,
     coverUrl: null,
@@ -83,7 +83,7 @@ export class BookFormComponent implements OnInit {
             isbn: book.isbn,
             publicationYear: book.publicationYear,
             publisher: book.publisher,
-            genreId: book.genreId,
+            genreIds: book.genreIds,
             description: book.description,
             pageCount: book.pageCount,
             coverUrl: book.coverUrl,
@@ -103,7 +103,9 @@ export class BookFormComponent implements OnInit {
   }
 
   authorDropdownOpen = false;
+  genreDropdownOpen = false;
   authorSearchTerm = '';
+  genreSearchTerm = '';
   newAuthorName = '';
 
   get filteredAuthors(): Author[] {
@@ -112,8 +114,18 @@ export class BookFormComponent implements OnInit {
     return this.authors.filter(a => a.name.toLowerCase().includes(term));
   }
 
+  get filteredGenres(): Genre[] {
+    if (!this.genreSearchTerm.trim()) return this.genres;
+    const term = this.genreSearchTerm.toLowerCase();
+    return this.genres.filter(g => g.name.toLowerCase().includes(term));
+  }
+
   get selectedAuthors(): Author[] {
     return this.authors.filter(a => this.model.authorIds.includes(a.id));
+  }
+
+  get selectedGenres(): Genre[] {
+    return this.genres.filter(g => this.model.genreIds.includes(g.id));
   }
 
   @HostListener('document:click', ['$event'])
@@ -121,6 +133,9 @@ export class BookFormComponent implements OnInit {
     const target = event.target as HTMLElement;
     if (this.authorDropdownOpen && !target.closest('.author-select')) {
       this.authorDropdownOpen = false;
+    }
+    if (this.genreDropdownOpen && !target.closest('.genre-select')) {
+      this.genreDropdownOpen = false;
     }
   }
 
@@ -137,9 +152,27 @@ export class BookFormComponent implements OnInit {
     this.model.authorIds = this.model.authorIds.filter(id => id !== authorId);
   }
 
+  toggleGenre(genreId: string): void {
+    const idx = this.model.genreIds.indexOf(genreId);
+    if (idx >= 0) {
+      this.model.genreIds.splice(idx, 1);
+    } else {
+      this.model.genreIds.push(genreId);
+    }
+  }
+
+  removeGenre(genreId: string): void {
+    this.model.genreIds = this.model.genreIds.filter(id => id !== genreId);
+  }
+
   selectedAuthorNames(): string {
     const names = this.authors.filter(a => this.model.authorIds.includes(a.id)).map(a => a.name);
     return names.length > 0 ? names.join(', ') : 'Selecionar autores';
+  }
+
+  selectedGenreNames(): string {
+    const names = this.genres.filter(g => this.model.genreIds.includes(g.id)).map(g => g.name);
+    return names.length > 0 ? names.join(', ') : 'Selecionar gêneros';
   }
 
   addNewAuthor(): void {

@@ -56,11 +56,31 @@
     </div>
 
     <div class="form-group">
-      <label for="genreId">Gênero *</label>
-      <select id="genreId" name="genreId" [(ngModel)]="model.genreId" required>
-        <option value="" disabled>Selecione um gênero</option>
-        <option *ngFor="let genre of genres" [value]="genre.id">{{ genre.name }}</option>
-      </select>
+      <label>Gênero(s) *</label>
+      <div class="genre-tags" *ngIf="model.genreIds.length > 0">
+        <span class="genre-tag" *ngFor="let genre of selectedGenres">
+          {{ genre.name }}
+          <span class="genre-tag-remove" (click)="removeGenre(genre.id)">&times;</span>
+        </span>
+      </div>
+      <div class="genre-select">
+        <button type="button" class="genre-select-trigger" [class.open]="genreDropdownOpen"
+                (click)="genreDropdownOpen = !genreDropdownOpen">
+          {{ selectedGenreNames() }}
+        </button>
+        <div class="genre-dropdown" *ngIf="genreDropdownOpen">
+          <div class="genre-search">
+            <input [(ngModel)]="genreSearchTerm" name="genreSearch" placeholder="Buscar gênero..." />
+          </div>
+          <div class="genre-dropdown-list">
+            <label class="genre-dropdown-item" *ngFor="let genre of filteredGenres">
+              <input type="checkbox" [checked]="model.genreIds.includes(genre.id)"
+                     (change)="toggleGenre(genre.id)" />
+              {{ genre.name }}
+            </label>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="form-group">
@@ -79,6 +99,8 @@
         <option [ngValue]="null">--</option>
         <option value="Lendo">Lendo</option>
         <option value="Lido">Lido</option>
+        <option value="Relendo">Relendo</option>
+        <option value="Relido">Relido</option>
         <option value="Abandonado">Abandonado</option>
       </select>
     </div>

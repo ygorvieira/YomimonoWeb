@@ -97,7 +97,7 @@ export class BookListComponent implements OnInit {
     });
   }
 
-  private readonly statusCycle = [null, 'Lendo', 'Lido', 'Abandonado'] as const;
+  private readonly statusCycle = [null, 'Lendo', 'Lido', 'Relendo', 'Relido', 'Abandonado'] as const;
 
   cycleStatus(book: Book): void {
     const currentIdx = this.statusCycle.indexOf(book.readingStatus as typeof this.statusCycle[number]);

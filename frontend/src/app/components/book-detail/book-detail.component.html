@@ -8,11 +8,12 @@
     <h2>{{ book.title }}</h2>
     <p><strong>Autor(es):</strong> {{ book.authorNames?.join(', ') }}</p>
     <p><strong>Editora:</strong> {{ book.publisher }}</p>
-    <p><strong>Gênero:</strong> {{ book.genreName }}</p>
+    <p><strong>Gênero(s):</strong> {{ book.genreNames?.join(', ') }}</p>
     <p><strong>Ano de Publicação:</strong> {{ book.publicationYear }}</p>
     <p><strong>Páginas:</strong> {{ book.pageCount }}</p>
     <p *ngIf="book.description"><strong>Descrição:</strong> {{ book.description }}</p>
     <p *ngIf="book.coverUrl"><img [src]="book.coverUrl" alt="Capa" class="cover" /></p>
+    <p *ngIf="book.reReadCount > 0"><strong>Releituras:</strong> {{ book.reReadCount }}</p>
 
     <div class="status-section">
       <p>
@@ -21,6 +22,8 @@
           <option [ngValue]="null">--</option>
           <option value="Lendo">Lendo</option>
           <option value="Lido">Lido</option>
+          <option value="Relendo">Relendo</option>
+          <option value="Relido">Relido</option>
           <option value="Abandonado">Abandonado</option>
         </select>
       </p>

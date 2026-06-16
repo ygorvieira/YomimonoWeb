@@ -38,14 +38,16 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
         builder.Property(b => b.IsLiked)
             .HasDefaultValue(false);
 
-        builder.HasOne(b => b.Genre)
-            .WithMany()
-            .HasForeignKey(b => b.GenreId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(b => b.ReReadCount)
+            .HasDefaultValue(0);
 
         builder.HasMany(b => b.BookAuthors)
             .WithOne(ba => ba.Book)
             .HasForeignKey(ba => ba.BookId);
+
+        builder.HasMany(b => b.Genres)
+            .WithOne(bg => bg.Book)
+            .HasForeignKey(bg => bg.BookId);
 
     }
 }

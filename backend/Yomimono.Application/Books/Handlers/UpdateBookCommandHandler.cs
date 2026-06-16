@@ -30,12 +30,21 @@ public class UpdateBookCommandHandler(
                 return Result<BookDto>.Failure("Já existe um livro cadastrado com este ISBN.");
         }
 
-        Genre? genre = null;
-        if (request.Book.GenreId.HasValue)
+        List<Genre>? genres = null;
+        if (request.Book.GenreIds is not null)
         {
-            genre = await genreRepository.GetByIdAsync(request.Book.GenreId.Value, cancellationToken);
-            if (genre is null)
-                return Result<BookDto>.Failure("Gênero não encontrado.");
+            var genreIds = request.Book.GenreIds.Distinct().ToArray();
+            if (genreIds.Length == 0)
+                return Result<BookDto>.Failure("É necessário selecionar pelo menos um gênero.");
+
+            genres = [];
+            foreach (var genreId in genreIds)
+            {
+                var genre = await genreRepository.GetByIdAsync(genreId, cancellationToken);
+                if (genre is null)
+                    return Result<BookDto>.Failure($"Gênero com ID {genreId} não encontrado.");
+                genres.Add(genre);
+            }
         }
 
         if (request.Book.AuthorIds is not null)
@@ -55,7 +64,7 @@ public class UpdateBookCommandHandler(
         var error = book.UpdateDetails(
             request.Book.Title, request.Book.AuthorIds, request.Book.Isbn,
             request.Book.PublicationYear, request.Book.Publisher,
-            request.Book.GenreId, request.Book.PageCount,
+            request.Book.GenreIds, request.Book.PageCount,
             request.Book.Description, request.Book.CoverUrl,
             request.Book.ReadingStatus, request.Book.IsLiked
         );
@@ -65,23 +74,21 @@ public class UpdateBookCommandHandler(
 
         bookRepository.Update(book);
 
-        if (genre is null)
-            genre = book.Genre;
-
-        var dto = MapToDto(book, genre);
+        var dto = MapToDto(book);
         return Result<BookDto>.Success(dto, "Livro atualizado com sucesso.");
     }
 
-    private static BookDto MapToDto(Book book, Genre genre)
+    private static BookDto MapToDto(Book book)
     {
         return new BookDto(
             book.Id, book.Title,
             book.BookAuthors.Select(ba => ba.AuthorId).ToArray(),
             book.BookAuthors.Select(ba => ba.Author?.Name ?? "").ToArray(),
             book.Isbn, book.PublicationYear, book.Publisher,
-            book.GenreId, genre.Name,
+            book.Genres.Select(bg => bg.GenreId).ToArray(),
+            book.Genres.Select(bg => bg.Genre?.Name ?? "").ToArray(),
             book.Description, book.PageCount, book.CoverUrl,
-            book.ReadingStatus, book.IsLiked,
+            book.ReadingStatus, book.IsLiked, book.ReReadCount,
             book.CreatedAt, book.UpdatedAt
         );
     }

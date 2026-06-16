@@ -35,12 +35,10 @@ public class UpdateBookCommandHandlerTests
     [Fact]
     public async Task Handle_ExistingBook_ShouldReturnValidResult()
     {
-        var genre = Genre.Create("Romance");
         var (book, _) = Book.Create(
             "Original Title", [_authorId], "9788535902778",
-            1900, "Original Publisher", _genreId, 100, null, null, null, false
+            1900, "Original Publisher", [_genreId], 100, null, null, null, false
         );
-        book!.Genre = genre;
 
         _bookRepositoryMock.Setup(r => r.GetByIdAsync(book.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(book);
@@ -71,7 +69,7 @@ public class UpdateBookCommandHandlerTests
     [Fact]
     public async Task Handle_DuplicateIsbn_ShouldReturnInvalidResult()
     {
-        var (book, _) = Book.Create("Title", [_authorId], "9788535902778", 2000, "Pub", _genreId, 100, null, null, null, false);
+        var (book, _) = Book.Create("Title", [_authorId], "9788535902778", 2000, "Pub", [_genreId], 100, null, null, null, false);
 
         _bookRepositoryMock.Setup(r => r.GetByIdAsync(book!.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(book);

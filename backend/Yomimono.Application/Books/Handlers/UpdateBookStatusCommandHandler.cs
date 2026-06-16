@@ -29,9 +29,10 @@ public class UpdateBookStatusCommandHandler(IBookRepository repository)
             book.BookAuthors.Select(ba => ba.AuthorId).ToArray(),
             book.BookAuthors.Select(ba => ba.Author?.Name ?? "").ToArray(),
             book.Isbn, book.PublicationYear, book.Publisher,
-            book.GenreId, book.Genre?.Name ?? "",
+            book.Genres.Select(bg => bg.GenreId).ToArray(),
+            book.Genres.Select(bg => bg.Genre?.Name ?? "").ToArray(),
             book.Description, book.PageCount, book.CoverUrl,
-            book.ReadingStatus, book.IsLiked,
+            book.ReadingStatus, book.IsLiked, book.ReReadCount,
             book.CreatedAt, book.UpdatedAt
         );
     }

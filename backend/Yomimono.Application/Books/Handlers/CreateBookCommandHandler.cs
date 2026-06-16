@@ -26,9 +26,18 @@ public class CreateBookCommandHandler(
                 return Result<BookDto>.Failure("Já existe um livro cadastrado com este ISBN.");
         }
 
-        var genre = await genreRepository.GetByIdAsync(request.Book.GenreId, cancellationToken);
-        if (genre is null)
-            return Result<BookDto>.Failure("Gênero não encontrado.");
+        var genreIds = request.Book.GenreIds.Distinct().ToArray();
+        if (genreIds.Length == 0)
+            return Result<BookDto>.Failure("É necessário selecionar pelo menos um gênero.");
+
+        var genres = new List<Genre>();
+        foreach (var genreId in genreIds)
+        {
+            var genre = await genreRepository.GetByIdAsync(genreId, cancellationToken);
+            if (genre is null)
+                return Result<BookDto>.Failure($"Gênero com ID {genreId} não encontrado.");
+            genres.Add(genre);
+        }
 
         var authorIds = request.Book.AuthorIds.Distinct().ToArray();
         if (authorIds.Length == 0)
@@ -44,7 +53,7 @@ public class CreateBookCommandHandler(
         var (book, error) = Book.Create(
             request.Book.Title, authorIds, request.Book.Isbn,
             request.Book.PublicationYear, request.Book.Publisher,
-            request.Book.GenreId, request.Book.PageCount,
+            genreIds, request.Book.PageCount,
             request.Book.Description, request.Book.CoverUrl,
             request.Book.ReadingStatus, request.Book.IsLiked
         );
@@ -53,19 +62,20 @@ public class CreateBookCommandHandler(
             return Result<BookDto>.Failure(error);
 
         await bookRepository.AddAsync(book!, cancellationToken);
-        return Result<BookDto>.Created(MapToDto(book!, genre), "Livro cadastrado com sucesso.");
+        return Result<BookDto>.Created(MapToDto(book!, genres), "Livro cadastrado com sucesso.");
     }
 
-    private static BookDto MapToDto(Book book, Genre genre)
+    private static BookDto MapToDto(Book book, List<Genre> genres)
     {
         return new BookDto(
             book.Id, book.Title,
             book.BookAuthors.Select(ba => ba.AuthorId).ToArray(),
             book.BookAuthors.Select(ba => ba.Author?.Name ?? "").ToArray(),
             book.Isbn, book.PublicationYear, book.Publisher,
-            book.GenreId, genre.Name,
+            genres.Select(g => g.Id).ToArray(),
+            genres.Select(g => g.Name).ToArray(),
             book.Description, book.PageCount, book.CoverUrl,
-            book.ReadingStatus, book.IsLiked,
+            book.ReadingStatus, book.IsLiked, book.ReReadCount,
             book.CreatedAt, book.UpdatedAt
         );
     }

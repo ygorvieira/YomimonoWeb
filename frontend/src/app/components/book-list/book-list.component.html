@@ -20,6 +20,8 @@
       <option value="">Todos os Status</option>
       <option value="Lendo">Lendo</option>
       <option value="Lido">Lido</option>
+      <option value="Relendo">Relendo</option>
+      <option value="Relido">Relido</option>
       <option value="Abandonado">Abandonado</option>
     </select>
   </div>
@@ -32,7 +34,7 @@
       <tr>
         <th>Título</th>
         <th>Autor(es)</th>
-        <th>Gênero</th>
+        <th>Gênero(s)</th>
         <th>Ano</th>
         <th>Status</th>
         <th>Like</th>
@@ -43,12 +45,13 @@
       <tr *ngFor="let book of books">
         <td>{{ book.title }}</td>
         <td>{{ book.authorNames?.join(', ') }}</td>
-        <td>{{ book.genreName }}</td>
+        <td>{{ book.genreNames?.join(', ') }}</td>
         <td>{{ book.publicationYear }}</td>
         <td>
           <button (click)="cycleStatus(book)" class="status-badge" [class]="'status-badge ' + (book.readingStatus || 'null')">
             {{ book.readingStatus || '--' }}
           </button>
+          <span *ngIf="book.reReadCount > 0" class="re-read-count" title="Releituras">{{ book.reReadCount }}x</span>
         </td>
         <td>
           <button (click)="toggleLike(book)" class="btn-like" [class.liked]="book.isLiked">

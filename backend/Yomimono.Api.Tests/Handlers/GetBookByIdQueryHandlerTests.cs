@@ -28,11 +28,13 @@ public class GetBookByIdQueryHandlerTests
 
         var (book, _) = Book.Create(
             "Dom Casmurro", [authorId], "9788535902778",
-            1899, "Garnier", genreId, 256, null, null, null, false
+            1899, "Garnier", [genreId], 256, null, null, null, false
         );
-        book!.Genre = genre;
+        book!.Genres.Add(new BookGenre(book.Id, genreId));
         foreach (var ba in book.BookAuthors)
             ba.GetType().GetProperty("Author")!.SetValue(ba, author);
+        foreach (var bg in book.Genres)
+            bg.GetType().GetProperty("Genre")!.SetValue(bg, genre);
 
         _repositoryMock.Setup(r => r.GetByIdAsync(book.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(book);
