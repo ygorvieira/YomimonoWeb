@@ -61,4 +61,13 @@ public class BookRepository(AppDbContext context) : IBookRepository
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(b => b.Isbn == isbn && b.DeletedAt == null, cancellationToken);
     }
+
+    public async Task<IEnumerable<Book>> GetAllForReportsAsync(CancellationToken cancellationToken = default)
+    {
+        return await context.Books
+            .IgnoreQueryFilters()
+            .Include(b => b.Genres).ThenInclude(bg => bg.Genre)
+            .Where(b => b.DeletedAt == null)
+            .ToListAsync(cancellationToken);
+    }
 }
