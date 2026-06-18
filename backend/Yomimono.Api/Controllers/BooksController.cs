@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Yomimono.Application.Books.Commands;
 using Yomimono.Application.Books.DTOs;
 using Yomimono.Application.Books.Queries;
+using Yomimono.Application.Common;
 
 namespace Yomimono.Api.Controllers;
 
@@ -16,9 +17,14 @@ public class BooksController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetAll(
         [FromQuery] Guid? genreId,
         [FromQuery] Guid? authorId,
-        [FromQuery] string? readingStatus)
+        [FromQuery] string? readingStatus,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 50)
     {
-        var result = await mediator.Send(new GetAllBooksQuery(genreId, authorId, readingStatus));
+        if (pageSize > 100)
+            return BadRequest(Result<object>.Failure("O tamanho da página não pode exceder 100 itens."));
+
+        var result = await mediator.Send(new GetAllBooksQuery(genreId, authorId, readingStatus, page, pageSize));
         return result.Valid ? Ok(result) : BadRequest(result);
     }
 

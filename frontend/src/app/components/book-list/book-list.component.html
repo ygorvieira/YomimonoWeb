@@ -72,4 +72,11 @@
   <div *ngIf="!loading && books.length === 0" class="empty">
     Nenhum livro cadastrado.
   </div>
+
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage <= 1" class="btn-page">Anterior</button>
+    <button *ngFor="let p of pageNumbers" (click)="goToPage(p)" class="btn-page" [class.active]="p === currentPage">{{ p }}</button>
+    <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage >= totalPages" class="btn-page">Próximo</button>
+    <span class="pagination-info">Página {{ currentPage }} de {{ totalPages }} ({{ totalCount }} livros)</span>
+  </div>
 </div>

@@ -7,5 +7,7 @@ namespace Yomimono.Application.Books.Queries;
 public record GetAllBooksQuery(
     Guid? GenreId = null,
     Guid? AuthorId = null,
-    string? ReadingStatus = null
-) : IRequest<Result<IEnumerable<BookDto>>>;
+    string? ReadingStatus = null,
+    int PageNumber = 1,
+    int PageSize = 50
+) : IRequest<Result<PagedResult<BookDto>>>;

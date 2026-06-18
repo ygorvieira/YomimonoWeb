@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Yomimono.Application.Books.Common;
+using Yomimono.Application.Common;
 using Yomimono.Domain.Entities;
 using Yomimono.Infrastructure.Data;
 
@@ -18,22 +19,33 @@ public class BookRepository(AppDbContext context) : IBookRepository
 
     public async Task<IEnumerable<Book>> GetAllAsync(Guid? genreId = null, Guid? authorId = null, string? readingStatus = null, CancellationToken cancellationToken = default)
     {
-        var query = context.Books
-            .IgnoreQueryFilters()
-            .Include(b => b.BookAuthors).ThenInclude(ba => ba.Author)
-            .Include(b => b.Genres).ThenInclude(bg => bg.Genre)
-            .Where(b => b.DeletedAt == null);
-
-        if (genreId.HasValue)
-            query = query.Where(b => b.Genres.Any(bg => bg.GenreId == genreId.Value));
-
-        if (authorId.HasValue)
-            query = query.Where(b => b.BookAuthors.Any(ba => ba.AuthorId == authorId.Value));
-
-        if (!string.IsNullOrWhiteSpace(readingStatus))
-            query = query.Where(b => b.ReadingStatus == readingStatus);
-
+        var query = BuildFilteredQuery(genreId, authorId, readingStatus);
         return await query.OrderBy(b => b.Title).ToListAsync(cancellationToken);
+    }
+
+    public async Task<PagedResult<Book>> GetAllPagedAsync(Guid? genreId, Guid? authorId, string? readingStatus, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+    {
+        var query = BuildFilteredQuery(genreId, authorId, readingStatus);
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var items = await query
+            .OrderBy(b => b.Title)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+        return new PagedResult<Book>(
+            items,
+            totalCount,
+            pageNumber,
+            pageSize,
+            totalPages,
+            HasNextPage: pageNumber < totalPages,
+            HasPrevPage: pageNumber > 1
+        );
     }
 
     public async Task AddAsync(Book entity, CancellationToken cancellationToken = default)
@@ -66,8 +78,29 @@ public class BookRepository(AppDbContext context) : IBookRepository
     {
         return await context.Books
             .IgnoreQueryFilters()
+            .Include(b => b.BookAuthors).ThenInclude(ba => ba.Author)
             .Include(b => b.Genres).ThenInclude(bg => bg.Genre)
             .Where(b => b.DeletedAt == null)
             .ToListAsync(cancellationToken);
+    }
+
+    private IQueryable<Book> BuildFilteredQuery(Guid? genreId, Guid? authorId, string? readingStatus)
+    {
+        var query = context.Books
+            .IgnoreQueryFilters()
+            .Include(b => b.BookAuthors).ThenInclude(ba => ba.Author)
+            .Include(b => b.Genres).ThenInclude(bg => bg.Genre)
+            .Where(b => b.DeletedAt == null);
+
+        if (genreId.HasValue)
+            query = query.Where(b => b.Genres.Any(bg => bg.GenreId == genreId.Value));
+
+        if (authorId.HasValue)
+            query = query.Where(b => b.BookAuthors.Any(ba => ba.AuthorId == authorId.Value));
+
+        if (!string.IsNullOrWhiteSpace(readingStatus))
+            query = query.Where(b => b.ReadingStatus == readingStatus);
+
+        return query;
     }
 }

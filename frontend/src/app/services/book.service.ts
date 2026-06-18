@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Book, CreateBookDto, UpdateBookDto, UpdateBookStatusDto, Result } from '../models/book.model';
+import { PagedResult } from '../models/paged-result.model';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -10,12 +11,14 @@ export class BookService {
 
   constructor(private http: HttpClient) {}
 
-  getAll(genreId?: string, authorId?: string, readingStatus?: string): Observable<Result<Book[]>> {
+  getAll(genreId?: string, authorId?: string, readingStatus?: string, page?: number, pageSize?: number): Observable<Result<PagedResult<Book>>> {
     let params = new HttpParams();
     if (genreId) params = params.set('genreId', genreId);
     if (authorId) params = params.set('authorId', authorId);
     if (readingStatus) params = params.set('readingStatus', readingStatus);
-    return this.http.get<Result<Book[]>>(this.apiUrl, { params });
+    if (page) params = params.set('page', page);
+    if (pageSize) params = params.set('pageSize', pageSize);
+    return this.http.get<Result<PagedResult<Book>>>(this.apiUrl, { params });
   }
 
   getById(id: string): Observable<Result<Book>> {
