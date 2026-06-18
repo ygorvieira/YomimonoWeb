@@ -27,6 +27,11 @@ import { ReportData } from '../../models/report.model';
           <span class="report-value">{{ data.totalRead }}</span>
         </div>
 
+        <div class="report-card total-pages">
+          <h3>Total de Páginas Lidas</h3>
+          <span class="report-value">{{ data.totalPagesRead }}</span>
+        </div>
+
         <div class="report-table-section">
           <h3>Livros por Categoria</h3>
           <table *ngIf="data.booksByGenre.length > 0">
@@ -68,13 +73,59 @@ import { ReportData } from '../../models/report.model';
           </table>
           <p *ngIf="data.genresByLikes.length === 0" class="empty">Nenhum dado disponível.</p>
         </div>
+
+        <div class="report-table-section">
+          <h3>Livros por Autor</h3>
+          <table *ngIf="data.booksByAuthor.length > 0">
+            <thead>
+              <tr>
+                <th>Autor</th>
+                <th>Livros</th>
+                <th>Páginas Lidas</th>
+                <th>Likes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of data.booksByAuthor">
+                <td>{{ item.authorName }}</td>
+                <td>{{ item.bookCount }}</td>
+                <td>{{ item.totalPagesRead }}</td>
+                <td>{{ item.likeCount }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <p *ngIf="data.booksByAuthor.length === 0" class="empty">Nenhum dado disponível.</p>
+        </div>
+
+        <div class="report-table-section">
+          <h3>Autores com Mais Curtidas</h3>
+          <table *ngIf="data.topAuthorsByLikes.length > 0">
+            <thead>
+              <tr>
+                <th>Autor</th>
+                <th>Curtidas</th>
+                <th>Livros</th>
+                <th>Páginas Lidas</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of data.topAuthorsByLikes">
+                <td>{{ item.authorName }}</td>
+                <td>{{ item.likeCount }}</td>
+                <td>{{ item.bookCount }}</td>
+                <td>{{ item.totalPagesRead }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <p *ngIf="data.topAuthorsByLikes.length === 0" class="empty">Nenhum dado disponível.</p>
+        </div>
       </div>
     </div>
   `,
   styles: [`
     .report-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 16px;
       margin-top: 16px;
     }

@@ -406,3 +406,47 @@ th { background: #f8f9fa; }
 .genre-dropdown-item:hover, .organizer-dropdown-item:hover {
   background: #f0f0f0;
 }
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.btn-page {
+  padding: 8px 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  transition: all 0.2s;
+}
+
+.btn-page:hover:not(:disabled) {
+  background: #3498db;
+  color: #fff;
+  border-color: #3498db;
+}
+
+.btn-page:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-page.active {
+  background: #3498db;
+  color: #fff;
+  border-color: #3498db;
+  font-weight: 600;
+}
+
+.pagination-info {
+  margin-left: 12px;
+  font-size: 13px;
+  color: #7f8c8d;
+}

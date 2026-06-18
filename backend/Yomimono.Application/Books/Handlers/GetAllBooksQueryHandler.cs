@@ -7,13 +7,25 @@ using Yomimono.Application.Common;
 namespace Yomimono.Application.Books.Handlers;
 
 public class GetAllBooksQueryHandler(IBookRepository repository)
-    : IRequestHandler<GetAllBooksQuery, Result<IEnumerable<BookDto>>>
+    : IRequestHandler<GetAllBooksQuery, Result<PagedResult<BookDto>>>
 {
-    public async Task<Result<IEnumerable<BookDto>>> Handle(GetAllBooksQuery request, CancellationToken cancellationToken)
+    public async Task<Result<PagedResult<BookDto>>> Handle(GetAllBooksQuery request, CancellationToken cancellationToken)
     {
-        var books = await repository.GetAllAsync(request.GenreId, request.AuthorId, request.ReadingStatus, cancellationToken);
-        var dtos = books.Select(MapToDto);
-        return Result<IEnumerable<BookDto>>.Success(dtos);
+        var pagedBooks = await repository.GetAllPagedAsync(request.GenreId, request.AuthorId, request.ReadingStatus, request.PageNumber, request.PageSize, cancellationToken);
+
+        var dtos = pagedBooks.Items.Select(MapToDto).ToList();
+
+        var result = new PagedResult<BookDto>(
+            dtos,
+            pagedBooks.TotalCount,
+            pagedBooks.PageNumber,
+            pagedBooks.PageSize,
+            pagedBooks.TotalPages,
+            pagedBooks.HasNextPage,
+            pagedBooks.HasPrevPage
+        );
+
+        return Result<PagedResult<BookDto>>.Success(result);
     }
 
     private static BookDto MapToDto(Domain.Entities.Book book)

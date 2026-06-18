@@ -26,6 +26,11 @@ export class BookListComponent implements OnInit {
   filterAuthorId = '';
   filterReadingStatus = '';
 
+  currentPage = 1;
+  pageSize = 50;
+  totalPages = 0;
+  totalCount = 0;
+
   constructor(
     private bookService: BookService,
     private authorService: AuthorService,
@@ -36,6 +41,16 @@ export class BookListComponent implements OnInit {
     this.loadAuthors();
     this.loadGenres();
     this.loadBooks();
+  }
+
+  get pageNumbers(): number[] {
+    const pages: number[] = [];
+    const start = Math.max(1, this.currentPage - 2);
+    const end = Math.min(this.totalPages, this.currentPage + 2);
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 
   loadAuthors(): void {
@@ -56,11 +71,17 @@ export class BookListComponent implements OnInit {
     this.bookService.getAll(
       this.filterGenreId || undefined,
       this.filterAuthorId || undefined,
-      this.filterReadingStatus || undefined
+      this.filterReadingStatus || undefined,
+      this.currentPage,
+      this.pageSize
     ).subscribe({
       next: (result) => {
         if (result.valid) {
-          this.books = result.data;
+          this.books = result.data.items;
+          this.totalCount = result.data.totalCount;
+          this.currentPage = result.data.pageNumber;
+          this.pageSize = result.data.pageSize;
+          this.totalPages = result.data.totalPages;
         } else {
           this.errorMessage = result.messages?.join(', ') || 'Erro ao carregar livros.';
         }
@@ -74,6 +95,13 @@ export class BookListComponent implements OnInit {
   }
 
   onFilterChange(): void {
+    this.currentPage = 1;
+    this.loadBooks();
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
     this.loadBooks();
   }
 

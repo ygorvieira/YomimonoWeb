@@ -4,7 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { BookListComponent } from './book-list.component';
 import { BookService } from '../../services/book.service';
 import { Result, Book } from '../../models/book.model';
-import { of } from 'rxjs';
+import { PagedResult } from '../../models/paged-result.model';
 
 describe('BookListComponent', () => {
   let component: BookListComponent;
@@ -30,12 +30,13 @@ describe('BookListComponent', () => {
   it('should load books on init', () => {
     fixture.detectChanges();
 
-    const req = httpMock.expectOne(`${(service as any).apiUrl}`);
+    const req = httpMock.expectOne(r => r.url === `${(service as any).apiUrl}`);
     expect(req.request.method).toBe('GET');
+    expect(req.request.params.get('page')).toBe('1');
+    expect(req.request.params.get('pageSize')).toBe('50');
 
-    const mockResult: Result<Book[]> = {
-      valid: true,
-      data: [{
+    const mockPaged: PagedResult<Book> = {
+      items: [{
         id: '1', title: 'Dom Casmurro', authorIds: ['a1'], authorNames: ['Machado de Assis'],
         organizerIds: [], organizerNames: [],
         isbn: '9788535902778', publicationYear: 1899, publisher: 'Garnier',
@@ -43,9 +44,10 @@ describe('BookListComponent', () => {
         description: null, coverUrl: null, readingStatus: null, isLiked: false,
         reReadCount: 0, createdAt: '2024-01-01', updatedAt: '2024-01-01'
       }],
-      messages: [],
-      statusCode: 200
+      totalCount: 1, pageNumber: 1, pageSize: 50, totalPages: 1,
+      hasNextPage: false, hasPrevPage: false
     };
+    const mockResult: Result<PagedResult<Book>> = { valid: true, data: mockPaged, messages: [], statusCode: 200 };
 
     req.flush(mockResult);
     expect(component.books.length).toBe(1);
@@ -62,8 +64,12 @@ describe('BookListComponent', () => {
     };
 
     fixture.detectChanges();
-    const req0 = httpMock.expectOne(`${(service as any).apiUrl}`);
-    req0.flush({ valid: true, data: [book], messages: [], statusCode: 200 });
+    const req0 = httpMock.expectOne(r => r.url === `${(service as any).apiUrl}`);
+    const mockPaged: PagedResult<Book> = {
+      items: [book], totalCount: 1, pageNumber: 1, pageSize: 50, totalPages: 1,
+      hasNextPage: false, hasPrevPage: false
+    };
+    req0.flush({ valid: true, data: mockPaged, messages: [], statusCode: 200 });
 
     component.cycleStatus(book);
     const req1 = httpMock.expectOne(`${(service as any).apiUrl}/1/status`);

@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { BookService } from './book.service';
 import { CreateBookDto, UpdateBookDto, UpdateBookStatusDto, Result, Book } from '../models/book.model';
+import { PagedResult } from '../models/paged-result.model';
 
 describe('BookService', () => {
   let service: BookService;
@@ -28,11 +29,15 @@ describe('BookService', () => {
   };
 
   it('should get all books', () => {
-    const mockResult: Result<Book[]> = { valid: true, data: [mockBook], messages: [], statusCode: 200 };
+    const mockPaged: PagedResult<Book> = {
+      items: [mockBook], totalCount: 1, pageNumber: 1, pageSize: 50, totalPages: 1, hasNextPage: false, hasPrevPage: false
+    };
+    const mockResult: Result<PagedResult<Book>> = { valid: true, data: mockPaged, messages: [], statusCode: 200 };
 
     service.getAll().subscribe(result => {
       expect(result.valid).toBeTrue();
-      expect(result.data.length).toBe(1);
+      expect(result.data.items.length).toBe(1);
+      expect(result.data.totalCount).toBe(1);
     });
 
     const req = httpMock.expectOne(`${(service as any).apiUrl}`);
@@ -41,13 +46,15 @@ describe('BookService', () => {
   });
 
   it('should get books with filters', () => {
-    service.getAll('g1', 'a1', 'Lendo').subscribe();
+    service.getAll('g1', 'a1', 'Lendo', 1, 50).subscribe();
     const req = httpMock.expectOne(r => r.url === `${(service as any).apiUrl}`);
     expect(req.request.method).toBe('GET');
     expect(req.request.params.get('genreId')).toBe('g1');
     expect(req.request.params.get('authorId')).toBe('a1');
     expect(req.request.params.get('readingStatus')).toBe('Lendo');
-    req.flush({ valid: true, data: [], messages: [], statusCode: 200 });
+    expect(req.request.params.get('page')).toBe('1');
+    expect(req.request.params.get('pageSize')).toBe('50');
+    req.flush({ valid: true, data: { items: [], totalCount: 0, pageNumber: 1, pageSize: 50, totalPages: 1, hasNextPage: false, hasPrevPage: false }, messages: [], statusCode: 200 });
   });
 
   it('should get book by id', () => {
