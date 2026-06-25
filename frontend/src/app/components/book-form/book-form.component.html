@@ -81,8 +81,18 @@
     </div>
 
     <div class="form-group" *ngIf="model.isTradePaperback">
-      <label for="tradeEdition">Edição</label>
-      <input id="tradeEdition" name="tradeEdition" [(ngModel)]="model.tradeEdition" />
+      <label>Edições</label>
+      <div class="edition-tags" *ngIf="(model.editions ?? []).length > 0">
+        <span class="edition-tag" *ngFor="let edition of model.editions">
+          {{ edition.name }} nº {{ edition.number }}
+          <span class="edition-tag-remove" (click)="removeEdition(edition)">&times;</span>
+        </span>
+      </div>
+      <div class="edition-input-group">
+        <input [(ngModel)]="editionInput" name="editionInput" placeholder="Título da edição..." />
+        <input [(ngModel)]="editionNumberInput" name="editionNumberInput" type="number" placeholder="Nº" class="edition-number-input" />
+        <button type="button" class="btn-primary btn-sm" (click)="addEdition()">+</button>
+      </div>
     </div>
 
     <div class="form-group">

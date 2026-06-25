@@ -1,5 +1,7 @@
 namespace Yomimono.Application.Books.DTOs;
 
+public record BookEditionDto(string Name, int Number);
+
 public record BookDto(
     Guid Id,
     string Title,
@@ -18,7 +20,7 @@ public record BookDto(
     bool IsLiked,
     int ReReadCount,
     bool IsTradePaperback,
-    string? TradeEdition,
+    BookEditionDto[] Editions,
     bool IsDigital,
     DateTime CreatedAt,
     DateTime UpdatedAt
@@ -37,7 +39,7 @@ public record CreateBookDto(
     bool IsLiked,
     Guid[]? OrganizerIds,
     bool IsTradePaperback = false,
-    string? TradeEdition = null,
+    BookEditionDto[]? Editions = null,
     bool IsDigital = false
 );
 
@@ -54,7 +56,7 @@ public record UpdateBookDto(
     bool? IsLiked,
     Guid[]? OrganizerIds,
     bool? IsTradePaperback = null,
-    string? TradeEdition = null,
+    BookEditionDto[]? Editions = null,
     bool? IsDigital = null
 );
 

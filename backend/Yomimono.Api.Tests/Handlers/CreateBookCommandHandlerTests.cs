@@ -117,7 +117,7 @@ public class CreateBookCommandHandlerTests
         var dto = new CreateBookDto(
             "Edição Especial", [_authorId],
             2024, "Editora", [_genreId], null, 200, null, null, false, null,
-            IsTradePaperback: true, TradeEdition: "1ª Edição"
+            IsTradePaperback: true, Editions: [new("1ª Edição", 1)]
         );
 
         var (author, _) = Author.Create("Autor");
@@ -131,6 +131,6 @@ public class CreateBookCommandHandlerTests
 
         result.Valid.ShouldBeTrue();
         result.Data.IsTradePaperback.ShouldBeTrue();
-        result.Data.TradeEdition.ShouldBe("1ª Edição");
+        result.Data.Editions.ShouldBe([new("1ª Edição", 1)]);
     }
 }

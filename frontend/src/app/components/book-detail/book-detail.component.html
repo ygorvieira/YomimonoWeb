@@ -12,7 +12,15 @@
     <p><strong>Gênero(s):</strong> {{ book.genreNames?.join(', ') }}</p>
     <p><strong>Ano de Publicação:</strong> {{ book.publicationYear }}</p>
     <p><strong>Páginas:</strong> {{ book.pageCount }}</p>
-    <p *ngIf="book.isTradePaperback"><strong>Encadernado:</strong> {{ book.tradeEdition || 'Sim' }}</p>
+    <p *ngIf="book.isTradePaperback">
+      <strong>Encadernado:</strong>
+      <span *ngIf="book.editions?.length; else justSim">
+        <span *ngFor="let ed of book.editions; let last = last">
+          {{ ed.name }} nº {{ ed.number }}<span *ngIf="!last">, </span>
+        </span>
+      </span>
+      <ng-template #justSim>Sim</ng-template>
+    </p>
     <p *ngIf="book.isDigital"><strong>Livro Digital</strong></p>
     <p *ngIf="book.description"><strong>Descrição:</strong> {{ book.description }}</p>
     <p *ngIf="book.coverUrl"><img [src]="book.coverUrl" alt="Capa" class="cover" /></p>

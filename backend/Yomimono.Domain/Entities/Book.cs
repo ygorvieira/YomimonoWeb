@@ -14,10 +14,10 @@ public class Book : BaseEntity
     public bool IsLiked { get; private set; }
     public int ReReadCount { get; private set; }
     public bool IsTradePaperback { get; private set; }
-    public string? TradeEdition { get; private set; }
     public bool IsDigital { get; private set; }
     public ICollection<BookAuthor> BookAuthors { get; private set; } = [];
     public ICollection<BookGenre> Genres { get; private set; } = [];
+    public ICollection<BookEdition> BookEditions { get; private set; } = [];
 
     private Book() { }
 
@@ -27,7 +27,7 @@ public class Book : BaseEntity
         int? pageCount, string? description, string? coverUrl,
         string? readingStatus = null, bool isLiked = false,
         IEnumerable<Guid>? organizerIds = null,
-        bool isTradePaperback = false, string? tradeEdition = null,
+        bool isTradePaperback = false, IEnumerable<(string Name, int Number)>? editions = null,
         bool isDigital = false)
     {
         if (string.IsNullOrWhiteSpace(title))
@@ -48,8 +48,16 @@ public class Book : BaseEntity
             return (null, $"O ano de publicação deve estar entre 1000 e {DateTime.UtcNow.Year}.");
         if (pageCount is <= 0)
             return (null, "O número de páginas deve ser maior que zero.");
-        if (tradeEdition is not null && tradeEdition.Length > 200)
-            return (null, "O campo edição deve ter no máximo 200 caracteres.");
+        if (editions is not null)
+        {
+            foreach (var (Name, Number) in editions)
+            {
+                if (Name.Length > 200)
+                    return (null, "O nome da edição deve ter no máximo 200 caracteres.");
+                if (Number <= 0)
+                    return (null, "O número da edição deve ser maior que zero.");
+            }
+        }
 
         var book = new Book
         {
@@ -63,7 +71,6 @@ public class Book : BaseEntity
             ReadingStatus = readingStatus,
             IsLiked = isLiked,
             IsTradePaperback = isTradePaperback,
-            TradeEdition = tradeEdition,
             IsDigital = isDigital,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -81,6 +88,12 @@ public class Book : BaseEntity
         foreach (var genreId in genreIds)
             book.Genres.Add(new BookGenre(book.Id, genreId));
 
+        if (editions is not null)
+        {
+            foreach (var (Name, Number) in editions)
+                book.BookEditions.Add(new BookEdition(book.Id, Name, Number));
+        }
+
         return (book, null);
     }
 
@@ -90,7 +103,7 @@ public class Book : BaseEntity
         int? pageCount, string? description, string? coverUrl,
         string? readingStatus, bool? isLiked,
         IEnumerable<Guid>? organizerIds = null,
-        bool? isTradePaperback = null, string? tradeEdition = null,
+        bool? isTradePaperback = null, IEnumerable<(string Name, int Number)>? editions = null,
         bool? isDigital = null)
     {
         if (title is not null)
@@ -141,13 +154,6 @@ public class Book : BaseEntity
         if (isTradePaperback.HasValue)
             IsTradePaperback = isTradePaperback.Value;
 
-        if (tradeEdition is not null)
-        {
-            if (tradeEdition.Length > 200)
-                return "O campo edição deve ter no máximo 200 caracteres.";
-            TradeEdition = tradeEdition;
-        }
-
         if (isDigital.HasValue)
             IsDigital = isDigital.Value;
 
@@ -173,6 +179,13 @@ public class Book : BaseEntity
             Genres.Clear();
             foreach (var genreId in genreIds)
                 Genres.Add(new BookGenre(Id, genreId));
+        }
+
+        if (editions is not null)
+        {
+            BookEditions.Clear();
+            foreach (var edition in editions)
+                BookEditions.Add(new BookEdition(Id, edition.Name, edition.Number));
         }
 
         UpdatedAt = DateTime.UtcNow;

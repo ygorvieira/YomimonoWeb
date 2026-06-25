@@ -35,7 +35,7 @@ public class UpdateBookStatusCommandHandler(IBookRepository repository)
             book.Genres.Select(bg => bg.Genre?.Name ?? "").ToArray(),
             book.Description, book.PageCount, book.CoverUrl,
             book.ReadingStatus, book.IsLiked, book.ReReadCount,
-            book.IsTradePaperback, book.TradeEdition, book.IsDigital,
+            book.IsTradePaperback, book.BookEditions.Select(e => new BookEditionDto(e.Name, e.Number)).ToArray(), book.IsDigital,
             book.CreatedAt, book.UpdatedAt
         );
     }

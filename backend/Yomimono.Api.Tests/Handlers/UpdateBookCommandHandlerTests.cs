@@ -90,11 +90,11 @@ public class UpdateBookCommandHandlerTests
         _bookRepositoryMock.Setup(r => r.GetByIdAsync(book!.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(book);
 
-        var updateDto = new UpdateBookDto(null, null, null, null, null, null, null, null, null, null, null, IsTradePaperback: true, TradeEdition: "2ª Edição");
+        var updateDto = new UpdateBookDto(null, null, null, null, null, null, null, null, null, null, null, IsTradePaperback: true, Editions: [new("2ª Edição", 2)]);
         var result = await _handler.Handle(new UpdateBookCommand(book.Id, updateDto), CancellationToken.None);
 
         result.Valid.ShouldBeTrue();
         result.Data.IsTradePaperback.ShouldBeTrue();
-        result.Data.TradeEdition.ShouldBe("2ª Edição");
+        result.Data.Editions.ShouldBe([new("2ª Edição", 2)]);
     }
 }
