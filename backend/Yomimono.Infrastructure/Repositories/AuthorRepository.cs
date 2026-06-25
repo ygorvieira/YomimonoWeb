@@ -14,13 +14,16 @@ public class AuthorRepository(AppDbContext context) : IAuthorRepository
             .FirstOrDefaultAsync(a => a.Id == id && a.DeletedAt == null, cancellationToken);
     }
 
-    public async Task<IEnumerable<Author>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Author>> GetAllAsync(string? searchTerm = null, CancellationToken cancellationToken = default)
     {
-        return await context.Authors
+        var query = context.Authors
             .IgnoreQueryFilters()
-            .Where(a => a.DeletedAt == null)
-            .OrderBy(a => a.Name)
-            .ToListAsync(cancellationToken);
+            .Where(a => a.DeletedAt == null);
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+            query = query.Where(a => a.Name.Contains(searchTerm));
+
+        return await query.OrderBy(a => a.Name).ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(Author entity, CancellationToken cancellationToken = default)

@@ -25,6 +25,7 @@ export class BookListComponent implements OnInit {
   filterGenreId = '';
   filterAuthorId = '';
   filterReadingStatus = '';
+  filterSearchTerm = '';
 
   currentPage = 1;
   pageSize = 50;
@@ -72,6 +73,7 @@ export class BookListComponent implements OnInit {
       this.filterGenreId || undefined,
       this.filterAuthorId || undefined,
       this.filterReadingStatus || undefined,
+      this.filterSearchTerm || undefined,
       this.currentPage,
       this.pageSize
     ).subscribe({

@@ -24,7 +24,7 @@ public class UpdateBookStatusCommandHandlerTests
     {
         var genreId = Guid.NewGuid();
         var genre = Genre.Create("Romance");
-        var (book, _) = Book.Create("Title", [Guid.NewGuid()], "111", 2000, "Pub", [genreId], 100, null, null, null, false);
+        var (book, _) = Book.Create("Title", [Guid.NewGuid()], 2000, "Pub", [genreId], 100, null, null, null, false);
         book!.Genres.Add(new BookGenre(book.Id, genreId));
         foreach (var bg in book.Genres)
             bg.GetType().GetProperty("Genre")!.SetValue(bg, genre);

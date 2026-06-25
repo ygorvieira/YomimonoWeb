@@ -35,10 +35,10 @@ describe('BookDetailComponent', () => {
       data: {
         id: '1', title: 'Dom Casmurro', authorIds: ['a1'], authorNames: ['Machado de Assis'],
         organizerIds: [], organizerNames: [],
-        isbn: '9788535902778', publicationYear: 1899, publisher: 'Garnier',
+        publicationYear: 1899, publisher: 'Garnier',
         genreIds: ['g1'], genreNames: ['Romance'], pageCount: 256,
         description: null, coverUrl: null, readingStatus: null, isLiked: false,
-        reReadCount: 0, createdAt: '', updatedAt: ''
+        isTradePaperback: false, isDigital: false, reReadCount: 0, createdAt: '', updatedAt: ''
       },
       messages: [],
       statusCode: 200

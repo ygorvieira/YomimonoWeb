@@ -2,6 +2,10 @@
   <h2>Gêneros</h2>
   <a routerLink="/genres/new" class="btn-primary">+ Novo Gênero</a>
 
+  <div class="filters" style="margin: 12px 0;">
+    <input [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()" placeholder="Buscar gênero..." />
+  </div>
+
   <div *ngIf="loading" class="loading">Carregando...</div>
   <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
 

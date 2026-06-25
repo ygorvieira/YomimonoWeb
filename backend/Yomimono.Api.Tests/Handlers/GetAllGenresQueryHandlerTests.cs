@@ -15,7 +15,7 @@ public class GetAllGenresQueryHandlerTests
         var repositoryMock = new Mock<IGenreRepository>();
         var genre1 = Genre.Create("Romance");
         var genre2 = Genre.Create("Ficção");
-        repositoryMock.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
+        repositoryMock.Setup(r => r.GetAllAsync(null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new[] { genre1, genre2 });
 
         var handler = new GetAllGenresQueryHandler(repositoryMock.Object);

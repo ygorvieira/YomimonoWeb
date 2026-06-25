@@ -19,6 +19,7 @@ public record ReportDto(
     int TotalBooks,
     int TotalRead,
     int TotalPagesRead,
+    int TotalPagesRemaining,
     List<GenreReportDto> BooksByGenre,
     List<GenreReportDto> GenresByLikes,
     List<AuthorReportDto> BooksByAuthor,

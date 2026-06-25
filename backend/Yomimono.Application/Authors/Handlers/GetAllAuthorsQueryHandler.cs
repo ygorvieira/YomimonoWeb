@@ -11,7 +11,7 @@ public class GetAllAuthorsQueryHandler(IAuthorRepository repository)
 {
     public async Task<Result<IEnumerable<AuthorDto>>> Handle(GetAllAuthorsQuery request, CancellationToken cancellationToken)
     {
-        var authors = await repository.GetAllAsync(cancellationToken);
+        var authors = await repository.GetAllAsync(request.SearchTerm, cancellationToken);
         var dtos = authors.Select(a => new AuthorDto(a.Id, a.Name, a.CreatedAt, a.UpdatedAt));
         return Result<IEnumerable<AuthorDto>>.Success(dtos);
     }

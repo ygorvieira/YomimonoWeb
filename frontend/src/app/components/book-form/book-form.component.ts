@@ -28,7 +28,6 @@ export class BookFormComponent implements OnInit {
   model: CreateBookDto = {
     title: '',
     authorIds: [],
-    isbn: '',
     publicationYear: new Date().getFullYear(),
     publisher: '',
     genreIds: [],
@@ -37,7 +36,10 @@ export class BookFormComponent implements OnInit {
     coverUrl: null,
     readingStatus: null,
     isLiked: false,
-    organizerIds: []
+    organizerIds: [],
+    isTradePaperback: false,
+    tradeEdition: null,
+    isDigital: false
   };
 
   constructor(
@@ -81,7 +83,6 @@ export class BookFormComponent implements OnInit {
           this.model = {
             title: book.title,
             authorIds: book.authorIds,
-            isbn: book.isbn,
             publicationYear: book.publicationYear,
             publisher: book.publisher,
             genreIds: book.genreIds,
@@ -90,7 +91,10 @@ export class BookFormComponent implements OnInit {
             coverUrl: book.coverUrl,
             readingStatus: book.readingStatus,
             isLiked: book.isLiked,
-            organizerIds: book.organizerIds
+            organizerIds: book.organizerIds,
+            isTradePaperback: book.isTradePaperback,
+            tradeEdition: book.tradeEdition,
+            isDigital: book.isDigital
           };
         } else {
           this.errorMessage = result.messages?.join(', ') || 'Livro não encontrado.';
@@ -236,7 +240,6 @@ export class BookFormComponent implements OnInit {
     this.successMessage = '';
 
     const payload = { ...this.model };
-    if (!payload.isbn) payload.isbn = null;
     if (!payload.pageCount) payload.pageCount = null;
     if (payload.organizerIds && payload.organizerIds.length === 0) payload.organizerIds = null;
 

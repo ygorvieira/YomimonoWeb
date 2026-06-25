@@ -5,7 +5,6 @@ namespace Yomimono.Domain.Entities;
 public class Book : BaseEntity
 {
     public string Title { get; private set; } = null!;
-    public string? Isbn { get; private set; }
     public int PublicationYear { get; private set; }
     public string Publisher { get; private set; } = null!;
     public string? Description { get; private set; }
@@ -14,17 +13,22 @@ public class Book : BaseEntity
     public string? ReadingStatus { get; private set; }
     public bool IsLiked { get; private set; }
     public int ReReadCount { get; private set; }
+    public bool IsTradePaperback { get; private set; }
+    public string? TradeEdition { get; private set; }
+    public bool IsDigital { get; private set; }
     public ICollection<BookAuthor> BookAuthors { get; private set; } = [];
     public ICollection<BookGenre> Genres { get; private set; } = [];
 
     private Book() { }
 
     public static (Book? book, string? error) Create(
-        string title, IEnumerable<Guid> authorIds, string? isbn,
+        string title, IEnumerable<Guid> authorIds,
         int publicationYear, string publisher, IEnumerable<Guid> genreIds,
         int? pageCount, string? description, string? coverUrl,
         string? readingStatus = null, bool isLiked = false,
-        IEnumerable<Guid>? organizerIds = null)
+        IEnumerable<Guid>? organizerIds = null,
+        bool isTradePaperback = false, string? tradeEdition = null,
+        bool isDigital = false)
     {
         if (string.IsNullOrWhiteSpace(title))
             return (null, "O campo título é obrigatório.");
@@ -36,8 +40,6 @@ public class Book : BaseEntity
             return (null, "É necessário selecionar pelo menos um gênero.");
         if (title.Length > 200)
             return (null, "O título deve ter no máximo 200 caracteres.");
-        if (isbn is not null && isbn.Length > 20)
-            return (null, "O ISBN deve ter no máximo 20 caracteres.");
         if (publisher.Length > 150)
             return (null, "A editora deve ter no máximo 150 caracteres.");
         if (readingStatus is not null && readingStatus.Length > 20)
@@ -46,12 +48,13 @@ public class Book : BaseEntity
             return (null, $"O ano de publicação deve estar entre 1000 e {DateTime.UtcNow.Year}.");
         if (pageCount is <= 0)
             return (null, "O número de páginas deve ser maior que zero.");
+        if (tradeEdition is not null && tradeEdition.Length > 200)
+            return (null, "O campo edição deve ter no máximo 200 caracteres.");
 
         var book = new Book
         {
             Id = Guid.NewGuid(),
             Title = title,
-            Isbn = isbn,
             PublicationYear = publicationYear,
             Publisher = publisher,
             Description = description,
@@ -59,6 +62,9 @@ public class Book : BaseEntity
             CoverUrl = coverUrl,
             ReadingStatus = readingStatus,
             IsLiked = isLiked,
+            IsTradePaperback = isTradePaperback,
+            TradeEdition = tradeEdition,
+            IsDigital = isDigital,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -79,24 +85,19 @@ public class Book : BaseEntity
     }
 
     public string? UpdateDetails(
-        string? title, IEnumerable<Guid>? authorIds, string? isbn,
+        string? title, IEnumerable<Guid>? authorIds,
         int? publicationYear, string? publisher, IEnumerable<Guid>? genreIds,
         int? pageCount, string? description, string? coverUrl,
         string? readingStatus, bool? isLiked,
-        IEnumerable<Guid>? organizerIds = null)
+        IEnumerable<Guid>? organizerIds = null,
+        bool? isTradePaperback = null, string? tradeEdition = null,
+        bool? isDigital = null)
     {
         if (title is not null)
         {
             if (title.Length > 200)
                 return "O título deve ter no máximo 200 caracteres.";
             Title = title;
-        }
-
-        if (isbn is not null)
-        {
-            if (isbn.Length > 20)
-                return "O ISBN deve ter no máximo 20 caracteres.";
-            Isbn = isbn;
         }
 
         if (publisher is not null)
@@ -136,6 +137,19 @@ public class Book : BaseEntity
 
         if (isLiked.HasValue)
             IsLiked = isLiked.Value;
+
+        if (isTradePaperback.HasValue)
+            IsTradePaperback = isTradePaperback.Value;
+
+        if (tradeEdition is not null)
+        {
+            if (tradeEdition.Length > 200)
+                return "O campo edição deve ter no máximo 200 caracteres.";
+            TradeEdition = tradeEdition;
+        }
+
+        if (isDigital.HasValue)
+            IsDigital = isDigital.Value;
 
         if (authorIds is not null || organizerIds is not null)
         {

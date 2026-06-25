@@ -5,7 +5,6 @@ export interface Book {
   authorNames: string[];
   organizerIds: string[];
   organizerNames: string[];
-  isbn?: string | null;
   publicationYear: number;
   publisher: string;
   genreIds: string[];
@@ -16,6 +15,9 @@ export interface Book {
   readingStatus?: string | null;
   isLiked: boolean;
   reReadCount: number;
+  isTradePaperback: boolean;
+  tradeEdition?: string | null;
+  isDigital: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -23,7 +25,6 @@ export interface Book {
 export interface CreateBookDto {
   title: string;
   authorIds: string[];
-  isbn?: string | null;
   publicationYear: number;
   publisher: string;
   genreIds: string[];
@@ -33,12 +34,14 @@ export interface CreateBookDto {
   readingStatus?: string | null;
   isLiked: boolean;
   organizerIds?: string[] | null;
+  isTradePaperback?: boolean;
+  tradeEdition?: string | null;
+  isDigital?: boolean;
 }
 
 export interface UpdateBookDto {
   title?: string | null;
   authorIds?: string[] | null;
-  isbn?: string | null;
   publicationYear?: number | null;
   publisher?: string | null;
   genreIds?: string[] | null;
@@ -48,6 +51,9 @@ export interface UpdateBookDto {
   readingStatus?: string | null;
   isLiked?: boolean | null;
   organizerIds?: string[] | null;
+  isTradePaperback?: boolean | null;
+  tradeEdition?: string | null;
+  isDigital?: boolean | null;
 }
 
 export interface UpdateBookStatusDto {

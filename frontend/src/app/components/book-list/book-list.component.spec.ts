@@ -39,10 +39,10 @@ describe('BookListComponent', () => {
       items: [{
         id: '1', title: 'Dom Casmurro', authorIds: ['a1'], authorNames: ['Machado de Assis'],
         organizerIds: [], organizerNames: [],
-        isbn: '9788535902778', publicationYear: 1899, publisher: 'Garnier',
+        publicationYear: 1899, publisher: 'Garnier',
         genreIds: ['g1'], genreNames: ['Romance'], pageCount: 256,
         description: null, coverUrl: null, readingStatus: null, isLiked: false,
-        reReadCount: 0, createdAt: '2024-01-01', updatedAt: '2024-01-01'
+        isTradePaperback: false, isDigital: false, reReadCount: 0, createdAt: '2024-01-01', updatedAt: '2024-01-01'
       }],
       totalCount: 1, pageNumber: 1, pageSize: 50, totalPages: 1,
       hasNextPage: false, hasPrevPage: false
@@ -57,10 +57,10 @@ describe('BookListComponent', () => {
     const book: Book = {
       id: '1', title: 'Test', authorIds: ['a1'], authorNames: ['Author'],
       organizerIds: [], organizerNames: [],
-      isbn: '123', publicationYear: 2024, publisher: 'Pub',
+      publicationYear: 2024, publisher: 'Pub',
       genreIds: ['g1'], genreNames: ['Genre'], pageCount: 100,
       description: null, coverUrl: null, readingStatus: null, isLiked: false,
-      reReadCount: 0, createdAt: '', updatedAt: ''
+      isTradePaperback: false, isDigital: false, reReadCount: 0, createdAt: '', updatedAt: ''
     };
 
     fixture.detectChanges();

@@ -27,7 +27,7 @@ public class GetBookByIdQueryHandlerTests
         var (author, _) = Author.Create("Machado de Assis");
 
         var (book, _) = Book.Create(
-            "Dom Casmurro", [authorId], "9788535902778",
+            "Dom Casmurro", [authorId],
             1899, "Garnier", [genreId], 256, null, null, null, false
         );
         book!.Genres.Add(new BookGenre(book.Id, genreId));

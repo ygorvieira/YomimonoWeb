@@ -20,9 +20,9 @@ public class GetReportsQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldReturnTotalPagesRead_SumOfLidoAndRelido()
     {
-        var (book1, author1) = CreateBook("Book 1", "111", 200, "Lido");
-        var (book2, _) = CreateBook("Book 2", "222", 300, "Relido", existingAuthor: author1);
-        var (book3, _) = CreateBook("Book 3", "333", 100, "Lendo", existingAuthor: author1);
+        var (book1, author1) = CreateBook("Book 1", 200, "Lido");
+        var (book2, _) = CreateBook("Book 2", 300, "Relido", existingAuthor: author1);
+        var (book3, _) = CreateBook("Book 3", 100, "Lendo", existingAuthor: author1);
 
         _repositoryMock.Setup(r => r.GetAllForReportsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Book> { book1, book2, book3 });
@@ -36,8 +36,8 @@ public class GetReportsQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldIgnoreNullPageCountInTotalPagesRead()
     {
-        var (book1, author1) = CreateBook("Book 1", "111", null, "Lido");
-        var (book2, _) = CreateBook("Book 2", "222", 150, "Lido", existingAuthor: author1);
+        var (book1, author1) = CreateBook("Book 1", null, "Lido");
+        var (book2, _) = CreateBook("Book 2", 150, "Lido", existingAuthor: author1);
 
         _repositoryMock.Setup(r => r.GetAllForReportsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Book> { book1, book2 });
@@ -51,10 +51,10 @@ public class GetReportsQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldReturnBooksByAuthor_OrderedByBookCountDesc()
     {
-        var (book1, author1) = CreateBook("Book 1", "111", 100, "Lido", isLiked: true);
-        var (book2, _) = CreateBook("Book 2", "222", 200, "Lido", existingAuthor: author1);
+        var (book1, author1) = CreateBook("Book 1", 100, "Lido", isLiked: true);
+        var (book2, _) = CreateBook("Book 2", 200, "Lido", existingAuthor: author1);
         var author2 = CreateAuthor("Author B");
-        var (book3, _) = CreateBook("Book 3", "333", 300, "Relido", isLiked: true, existingAuthor: author2);
+        var (book3, _) = CreateBook("Book 3", 300, "Relido", isLiked: true, existingAuthor: author2);
 
         _repositoryMock.Setup(r => r.GetAllForReportsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Book> { book1, book2, book3 });
@@ -76,10 +76,10 @@ public class GetReportsQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldReturnTopAuthorsByLikes_OrderedByLikeCountDesc()
     {
-        var (book1, author1) = CreateBook("Book 1", "111", 100, "Lido", isLiked: true);
+        var (book1, author1) = CreateBook("Book 1", 100, "Lido", isLiked: true);
         var author2 = CreateAuthor("Author B");
-        var (book2, _) = CreateBook("Book 2", "222", 200, "Lido", isLiked: true, existingAuthor: author2);
-        var (book3, _) = CreateBook("Book 3", "333", 300, "Lido", isLiked: true, existingAuthor: author2);
+        var (book2, _) = CreateBook("Book 2", 200, "Lido", isLiked: true, existingAuthor: author2);
+        var (book3, _) = CreateBook("Book 3", 300, "Lido", isLiked: true, existingAuthor: author2);
 
         _repositoryMock.Setup(r => r.GetAllForReportsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Book> { book1, book2, book3 });
@@ -101,7 +101,7 @@ public class GetReportsQueryHandlerTests
         var author2 = CreateAuthor("Author B");
         var genreId = Guid.NewGuid();
 
-        var (book, _) = Book.Create("Book 1", [author1.Id, author2.Id], "111", 2000, "Pub", [genreId], 200, null, null, "Lido", true);
+        var (book, _) = Book.Create("Book 1", [author1.Id, author2.Id], 2000, "Pub", [genreId], 200, null, null, "Lido", true);
         book!.Genres.Add(new BookGenre(book.Id, genreId));
         SetGenreNavigation(book);
         SetAuthorNavigation(book, author1, author2);
@@ -120,7 +120,7 @@ public class GetReportsQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldReturnZeroTotalPagesRead_WhenNoBooksRead()
     {
-        var (book, _) = CreateBook("Book 1", "111", 200, "Lendo");
+        var (book, _) = CreateBook("Book 1", 200, "Lendo");
 
         _repositoryMock.Setup(r => r.GetAllForReportsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Book> { book });
@@ -137,12 +137,12 @@ public class GetReportsQueryHandlerTests
         return author!;
     }
 
-    private static (Book, Author) CreateBook(string title, string isbn, int? pageCount, string readingStatus, bool isLiked = false, Author? existingAuthor = null)
+    private static (Book, Author) CreateBook(string title, int? pageCount, string readingStatus, bool isLiked = false, Author? existingAuthor = null)
     {
         var author = existingAuthor ?? CreateAuthor("Author A");
         var genreId = Guid.NewGuid();
 
-        var (book, _) = Book.Create(title, [author.Id], isbn, 2000, "Pub", [genreId], pageCount, null, null, readingStatus, isLiked);
+        var (book, _) = Book.Create(title, [author.Id], 2000, "Pub", [genreId], pageCount, null, null, readingStatus, isLiked);
         book!.Genres.Add(new BookGenre(book.Id, genreId));
         SetGenreNavigation(book);
         SetAuthorNavigation(book, author);

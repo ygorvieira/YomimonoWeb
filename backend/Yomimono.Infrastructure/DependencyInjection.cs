@@ -9,7 +9,6 @@ using Yomimono.Application.Authors.Common;
 using Yomimono.Application.Books.Common;
 using Yomimono.Application.Common;
 using Yomimono.Application.Genres.Common;
-using Yomimono.Domain.Common;
 using Yomimono.Domain.Entities;
 using Yomimono.Infrastructure.Data;
 using Yomimono.Infrastructure.Repositories;
@@ -60,7 +59,6 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IBookRepository, BookRepository>();
-        services.AddScoped<IBookUniquenessChecker, BookUniquenessChecker>();
         services.AddScoped<IAuthorRepository, AuthorRepository>();
         services.AddScoped<IGenreRepository, GenreRepository>();
         services.AddScoped<IIdentityService, IdentityService>();

@@ -32,6 +32,11 @@ import { ReportData } from '../../models/report.model';
           <span class="report-value">{{ data.totalPagesRead }}</span>
         </div>
 
+        <div class="report-card total-pages-remaining">
+          <h3>Páginas Restantes</h3>
+          <span class="report-value">{{ data.totalPagesRemaining }}</span>
+        </div>
+
         <div class="report-table-section">
           <h3>Livros por Categoria</h3>
           <table *ngIf="data.booksByGenre.length > 0">

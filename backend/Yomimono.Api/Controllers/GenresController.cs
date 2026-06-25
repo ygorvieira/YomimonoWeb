@@ -13,9 +13,9 @@ namespace Yomimono.Api.Controllers;
 public class GenresController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] string? searchTerm)
     {
-        var result = await mediator.Send(new GetAllGenresQuery());
+        var result = await mediator.Send(new GetAllGenresQuery(searchTerm));
         return result.Valid ? Ok(result) : BadRequest(result);
     }
 

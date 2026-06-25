@@ -18,13 +18,14 @@ public class BooksController(IMediator mediator) : ControllerBase
         [FromQuery] Guid? genreId,
         [FromQuery] Guid? authorId,
         [FromQuery] string? readingStatus,
+        [FromQuery] string? searchTerm,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 50)
     {
         if (pageSize > 100)
             return BadRequest(Result<object>.Failure("O tamanho da página não pode exceder 100 itens."));
 
-        var result = await mediator.Send(new GetAllBooksQuery(genreId, authorId, readingStatus, page, pageSize));
+        var result = await mediator.Send(new GetAllBooksQuery(genreId, authorId, readingStatus, searchTerm, page, pageSize));
         return result.Valid ? Ok(result) : BadRequest(result);
     }
 

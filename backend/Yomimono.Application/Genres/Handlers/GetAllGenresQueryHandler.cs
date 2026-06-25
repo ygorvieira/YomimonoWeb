@@ -11,7 +11,7 @@ public class GetAllGenresQueryHandler(IGenreRepository repository)
 {
     public async Task<Result<IEnumerable<GenreDto>>> Handle(GetAllGenresQuery request, CancellationToken cancellationToken)
     {
-        var genres = await repository.GetAllAsync(cancellationToken);
+        var genres = await repository.GetAllAsync(request.SearchTerm, cancellationToken);
         var dtos = genres.Select(g => new GenreDto(g.Id, g.Name, g.CreatedAt, g.UpdatedAt));
         return Result<IEnumerable<GenreDto>>.Success(dtos);
     }

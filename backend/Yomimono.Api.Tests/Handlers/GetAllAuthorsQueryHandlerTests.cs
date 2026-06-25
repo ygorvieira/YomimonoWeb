@@ -15,7 +15,7 @@ public class GetAllAuthorsQueryHandlerTests
         var repositoryMock = new Mock<IAuthorRepository>();
         var (author1, _) = Author.Create("Machado de Assis");
         var (author2, _) = Author.Create("Clarice Lispector");
-        repositoryMock.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
+        repositoryMock.Setup(r => r.GetAllAsync(null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new[] { author1!, author2! });
 
         var handler = new GetAllAuthorsQueryHandler(repositoryMock.Object);

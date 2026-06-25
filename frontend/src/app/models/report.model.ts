@@ -17,6 +17,7 @@ export interface ReportData {
   totalBooks: number;
   totalRead: number;
   totalPagesRead: number;
+  totalPagesRemaining: number;
   booksByGenre: GenreReportItem[];
   genresByLikes: GenreReportItem[];
   booksByAuthor: AuthorReportItem[];
