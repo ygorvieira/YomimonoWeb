@@ -55,9 +55,9 @@ public class BookRepository(AppDbContext context) : IBookRepository
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public void Update(Book entity)
+    public async Task UpdateAsync(Book entity)
     {
-        context.SaveChanges();
+        await context.SaveChangesAsync();
     }
 
     public void Delete(Book entity)
