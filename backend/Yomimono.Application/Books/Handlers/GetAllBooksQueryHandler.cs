@@ -11,7 +11,7 @@ public class GetAllBooksQueryHandler(IBookRepository repository)
 {
     public async Task<Result<PagedResult<BookDto>>> Handle(GetAllBooksQuery request, CancellationToken cancellationToken)
     {
-        var pagedBooks = await repository.GetAllPagedAsync(request.GenreId, request.AuthorId, request.ReadingStatus, request.PageNumber, request.PageSize, cancellationToken);
+        var pagedBooks = await repository.GetAllPagedAsync(request.GenreId, request.AuthorId, request.ReadingStatus, request.SearchTerm, request.PageNumber, request.PageSize, cancellationToken);
 
         var dtos = pagedBooks.Items.Select(MapToDto).ToList();
 
@@ -36,11 +36,12 @@ public class GetAllBooksQueryHandler(IBookRepository repository)
             book.BookAuthors.Where(ba => ba.Role == "Author").Select(ba => ba.Author?.Name ?? "").ToArray(),
             book.BookAuthors.Where(ba => ba.Role == "Organizer").Select(ba => ba.AuthorId).ToArray(),
             book.BookAuthors.Where(ba => ba.Role == "Organizer").Select(ba => ba.Author?.Name ?? "").ToArray(),
-            book.Isbn, book.PublicationYear, book.Publisher,
+            book.PublicationYear, book.Publisher,
             book.Genres.Select(bg => bg.GenreId).ToArray(),
             book.Genres.Select(bg => bg.Genre?.Name ?? "").ToArray(),
             book.Description, book.PageCount, book.CoverUrl,
             book.ReadingStatus, book.IsLiked, book.ReReadCount,
+            book.IsTradePaperback, book.TradeEdition, book.IsDigital,
             book.CreatedAt, book.UpdatedAt
         );
     }

@@ -4,4 +4,4 @@ using Yomimono.Application.Common;
 
 namespace Yomimono.Application.Authors.Queries;
 
-public record GetAllAuthorsQuery : IRequest<Result<IEnumerable<AuthorDto>>>;
+public record GetAllAuthorsQuery(string? SearchTerm = null) : IRequest<Result<IEnumerable<AuthorDto>>>;

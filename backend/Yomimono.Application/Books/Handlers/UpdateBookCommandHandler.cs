@@ -1,4 +1,3 @@
-using Yomimono.Domain.Common;
 using Yomimono.Domain.Entities;
 using MediatR;
 using Yomimono.Application.Books.Commands;
@@ -13,8 +12,7 @@ namespace Yomimono.Application.Books.Handlers;
 public class UpdateBookCommandHandler(
     IBookRepository bookRepository,
     IAuthorRepository authorRepository,
-    IGenreRepository genreRepository,
-    IBookUniquenessChecker uniquenessChecker)
+    IGenreRepository genreRepository)
     : IRequestHandler<UpdateBookCommand, Result<BookDto>>
 {
     public async Task<Result<BookDto>> Handle(UpdateBookCommand request, CancellationToken cancellationToken)
@@ -22,13 +20,6 @@ public class UpdateBookCommandHandler(
         var book = await bookRepository.GetByIdAsync(request.Id, cancellationToken);
         if (book is null)
             return Result<BookDto>.NotFound("Livro não encontrado.");
-
-        if (request.Book.Isbn is not null)
-        {
-            var isUnique = await uniquenessChecker.IsIsbnUniqueAsync(request.Book.Isbn, request.Id, cancellationToken);
-            if (!isUnique)
-                return Result<BookDto>.Failure("Já existe um livro cadastrado com este ISBN.");
-        }
 
         List<Genre>? genres = null;
         if (request.Book.GenreIds is not null)
@@ -64,12 +55,14 @@ public class UpdateBookCommandHandler(
         }
 
         var error = book.UpdateDetails(
-            request.Book.Title, request.Book.AuthorIds, request.Book.Isbn,
+            request.Book.Title, request.Book.AuthorIds,
             request.Book.PublicationYear, request.Book.Publisher,
             request.Book.GenreIds, request.Book.PageCount,
             request.Book.Description, request.Book.CoverUrl,
             request.Book.ReadingStatus, request.Book.IsLiked,
-            request.Book.OrganizerIds
+            request.Book.OrganizerIds,
+            request.Book.IsTradePaperback, request.Book.TradeEdition,
+            request.Book.IsDigital
         );
 
         if (error is not null)
@@ -89,11 +82,12 @@ public class UpdateBookCommandHandler(
             book.BookAuthors.Where(ba => ba.Role == "Author").Select(ba => ba.Author?.Name ?? "").ToArray(),
             book.BookAuthors.Where(ba => ba.Role == "Organizer").Select(ba => ba.AuthorId).ToArray(),
             book.BookAuthors.Where(ba => ba.Role == "Organizer").Select(ba => ba.Author?.Name ?? "").ToArray(),
-            book.Isbn, book.PublicationYear, book.Publisher,
+            book.PublicationYear, book.Publisher,
             book.Genres.Select(bg => bg.GenreId).ToArray(),
             book.Genres.Select(bg => bg.Genre?.Name ?? "").ToArray(),
             book.Description, book.PageCount, book.CoverUrl,
             book.ReadingStatus, book.IsLiked, book.ReReadCount,
+            book.IsTradePaperback, book.TradeEdition, book.IsDigital,
             book.CreatedAt, book.UpdatedAt
         );
     }

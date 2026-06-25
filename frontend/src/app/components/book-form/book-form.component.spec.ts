@@ -46,10 +46,10 @@ describe('BookFormComponent', () => {
       data: {
         id: '1', title: 'Test', authorIds: ['a1'], authorNames: ['Author'],
         organizerIds: [], organizerNames: [],
-        isbn: '123', publicationYear: 2024, publisher: 'Pub',
+        publicationYear: 2024, publisher: 'Pub',
         genreIds: ['g1'], genreNames: ['Ficção'], pageCount: 100,
         description: null, coverUrl: null, readingStatus: null, isLiked: false,
-        reReadCount: 0, createdAt: '', updatedAt: ''
+        isTradePaperback: false, isDigital: false, reReadCount: 0, createdAt: '', updatedAt: ''
       },
       messages: ['Livro cadastrado com sucesso.'],
       statusCode: 201

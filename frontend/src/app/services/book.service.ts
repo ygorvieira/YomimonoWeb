@@ -11,11 +11,12 @@ export class BookService {
 
   constructor(private http: HttpClient) {}
 
-  getAll(genreId?: string, authorId?: string, readingStatus?: string, page?: number, pageSize?: number): Observable<Result<PagedResult<Book>>> {
+  getAll(genreId?: string, authorId?: string, readingStatus?: string, searchTerm?: string, page?: number, pageSize?: number): Observable<Result<PagedResult<Book>>> {
     let params = new HttpParams();
     if (genreId) params = params.set('genreId', genreId);
     if (authorId) params = params.set('authorId', authorId);
     if (readingStatus) params = params.set('readingStatus', readingStatus);
+    if (searchTerm) params = params.set('searchTerm', searchTerm);
     if (page) params = params.set('page', page);
     if (pageSize) params = params.set('pageSize', pageSize);
     return this.http.get<Result<PagedResult<Book>>>(this.apiUrl, { params });

@@ -22,10 +22,10 @@ describe('BookService', () => {
   const mockBook: Book = {
     id: '1', title: 'Dom Casmurro', authorIds: ['a1'], authorNames: ['Machado'],
     organizerIds: [], organizerNames: [],
-    isbn: '123', publicationYear: 1899, publisher: 'Garnier',
+    publicationYear: 1899, publisher: 'Garnier',
     genreIds: ['g1'], genreNames: ['Romance'], pageCount: 256,
     coverUrl: null, description: null, readingStatus: null, isLiked: false,
-    reReadCount: 0, createdAt: '', updatedAt: ''
+    isTradePaperback: false, isDigital: false, reReadCount: 0, createdAt: '', updatedAt: ''
   };
 
   it('should get all books', () => {
@@ -46,7 +46,7 @@ describe('BookService', () => {
   });
 
   it('should get books with filters', () => {
-    service.getAll('g1', 'a1', 'Lendo', 1, 50).subscribe();
+    service.getAll('g1', 'a1', 'Lendo', undefined, 1, 50).subscribe();
     const req = httpMock.expectOne(r => r.url === `${(service as any).apiUrl}`);
     expect(req.request.method).toBe('GET');
     expect(req.request.params.get('genreId')).toBe('g1');
@@ -66,7 +66,7 @@ describe('BookService', () => {
 
   it('should create a book', () => {
     const dto: CreateBookDto = {
-      title: 'New Book', authorIds: ['a1'], isbn: '9788535902778',
+      title: 'New Book', authorIds: ['a1'],
       publicationYear: 2024, publisher: 'Pub', genreIds: ['g1'],
       pageCount: 100, description: null, coverUrl: null,
       readingStatus: null, isLiked: false, organizerIds: null

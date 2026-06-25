@@ -1,4 +1,3 @@
-using Yomimono.Domain.Common;
 using MediatR;
 using Yomimono.Application.Books.Commands;
 using Yomimono.Application.Books.Common;
@@ -13,19 +12,11 @@ namespace Yomimono.Application.Books.Handlers;
 public class CreateBookCommandHandler(
     IBookRepository bookRepository,
     IAuthorRepository authorRepository,
-    IGenreRepository genreRepository,
-    IBookUniquenessChecker uniquenessChecker)
+    IGenreRepository genreRepository)
     : IRequestHandler<CreateBookCommand, Result<BookDto>>
 {
     public async Task<Result<BookDto>> Handle(CreateBookCommand request, CancellationToken cancellationToken)
     {
-        if (request.Book.Isbn is not null)
-        {
-            var isUnique = await uniquenessChecker.IsIsbnUniqueAsync(request.Book.Isbn, null, cancellationToken);
-            if (!isUnique)
-                return Result<BookDto>.Failure("Já existe um livro cadastrado com este ISBN.");
-        }
-
         var genreIds = request.Book.GenreIds.Distinct().ToArray();
         if (genreIds.Length == 0)
             return Result<BookDto>.Failure("É necessário selecionar pelo menos um gênero.");
@@ -53,12 +44,14 @@ public class CreateBookCommandHandler(
         }
 
         var (book, error) = Book.Create(
-            request.Book.Title, authorIds, request.Book.Isbn,
+            request.Book.Title, authorIds,
             request.Book.PublicationYear, request.Book.Publisher,
             genreIds, request.Book.PageCount,
             request.Book.Description, request.Book.CoverUrl,
             request.Book.ReadingStatus, request.Book.IsLiked,
-            organizerIds
+            organizerIds,
+            request.Book.IsTradePaperback, request.Book.TradeEdition,
+            request.Book.IsDigital
         );
 
         if (error is not null)
@@ -76,11 +69,12 @@ public class CreateBookCommandHandler(
             book.BookAuthors.Where(ba => ba.Role == "Author").Select(ba => ba.Author?.Name ?? "").ToArray(),
             book.BookAuthors.Where(ba => ba.Role == "Organizer").Select(ba => ba.AuthorId).ToArray(),
             book.BookAuthors.Where(ba => ba.Role == "Organizer").Select(ba => ba.Author?.Name ?? "").ToArray(),
-            book.Isbn, book.PublicationYear, book.Publisher,
+            book.PublicationYear, book.Publisher,
             genres.Select(g => g.Id).ToArray(),
             genres.Select(g => g.Name).ToArray(),
             book.Description, book.PageCount, book.CoverUrl,
             book.ReadingStatus, book.IsLiked, book.ReReadCount,
+            book.IsTradePaperback, book.TradeEdition, book.IsDigital,
             book.CreatedAt, book.UpdatedAt
         );
     }

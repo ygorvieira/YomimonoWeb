@@ -21,6 +21,10 @@ public class GetReportsQueryHandler(IBookRepository repository)
 
         var totalPagesRead = readBooks.Sum(b => b.PageCount ?? 0);
 
+        var totalPagesRemaining = bookList
+            .Where(b => b.ReadingStatus is not "Lido" and not "Relido" && !b.IsDigital)
+            .Sum(b => b.PageCount ?? 0);
+
         var genreGroups = bookList
             .SelectMany(b => b.Genres.Select(bg => new { bg.GenreId, bg.Genre?.Name, Book = b }))
             .GroupBy(x => new { x.GenreId, x.Name })
@@ -50,7 +54,7 @@ public class GetReportsQueryHandler(IBookRepository repository)
         var booksByAuthor = authorGroups.OrderByDescending(g => g.BookCount).ToList();
         var topAuthorsByLikes = authorGroups.OrderByDescending(g => g.LikeCount).Take(10).ToList();
 
-        var report = new ReportDto(totalBooks, totalRead, totalPagesRead, booksByGenre, genresByLikes, booksByAuthor, topAuthorsByLikes);
+        var report = new ReportDto(totalBooks, totalRead, totalPagesRead, totalPagesRemaining, booksByGenre, genresByLikes, booksByAuthor, topAuthorsByLikes);
         return Result<ReportDto>.Success(report);
     }
 }

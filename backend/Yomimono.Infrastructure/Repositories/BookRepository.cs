@@ -17,15 +17,15 @@ public class BookRepository(AppDbContext context) : IBookRepository
             .FirstOrDefaultAsync(b => b.Id == id && b.DeletedAt == null, cancellationToken);
     }
 
-    public async Task<IEnumerable<Book>> GetAllAsync(Guid? genreId = null, Guid? authorId = null, string? readingStatus = null, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Book>> GetAllAsync(Guid? genreId = null, Guid? authorId = null, string? readingStatus = null, string? searchTerm = null, CancellationToken cancellationToken = default)
     {
-        var query = BuildFilteredQuery(genreId, authorId, readingStatus);
+        var query = BuildFilteredQuery(genreId, authorId, readingStatus, searchTerm);
         return await query.OrderBy(b => b.Title).ToListAsync(cancellationToken);
     }
 
-    public async Task<PagedResult<Book>> GetAllPagedAsync(Guid? genreId, Guid? authorId, string? readingStatus, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+    public async Task<PagedResult<Book>> GetAllPagedAsync(Guid? genreId, Guid? authorId, string? readingStatus, string? searchTerm, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
     {
-        var query = BuildFilteredQuery(genreId, authorId, readingStatus);
+        var query = BuildFilteredQuery(genreId, authorId, readingStatus, searchTerm);
 
         var totalCount = await query.CountAsync(cancellationToken);
 
@@ -67,13 +67,6 @@ public class BookRepository(AppDbContext context) : IBookRepository
         context.SaveChanges();
     }
 
-    public async Task<Book?> GetByIsbnAsync(string isbn, CancellationToken cancellationToken = default)
-    {
-        return await context.Books
-            .IgnoreQueryFilters()
-            .FirstOrDefaultAsync(b => b.Isbn == isbn && b.DeletedAt == null, cancellationToken);
-    }
-
     public async Task<IEnumerable<Book>> GetAllForReportsAsync(CancellationToken cancellationToken = default)
     {
         return await context.Books
@@ -84,7 +77,7 @@ public class BookRepository(AppDbContext context) : IBookRepository
             .ToListAsync(cancellationToken);
     }
 
-    private IQueryable<Book> BuildFilteredQuery(Guid? genreId, Guid? authorId, string? readingStatus)
+    private IQueryable<Book> BuildFilteredQuery(Guid? genreId, Guid? authorId, string? readingStatus, string? searchTerm = null)
     {
         var query = context.Books
             .IgnoreQueryFilters()
@@ -100,6 +93,9 @@ public class BookRepository(AppDbContext context) : IBookRepository
 
         if (!string.IsNullOrWhiteSpace(readingStatus))
             query = query.Where(b => b.ReadingStatus == readingStatus);
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+            query = query.Where(b => b.Title.Contains(searchTerm));
 
         return query;
     }

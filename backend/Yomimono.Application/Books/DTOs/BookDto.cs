@@ -7,7 +7,6 @@ public record BookDto(
     string[] AuthorNames,
     Guid[] OrganizerIds,
     string[] OrganizerNames,
-    string? Isbn,
     int PublicationYear,
     string Publisher,
     Guid[] GenreIds,
@@ -18,6 +17,9 @@ public record BookDto(
     string? ReadingStatus,
     bool IsLiked,
     int ReReadCount,
+    bool IsTradePaperback,
+    string? TradeEdition,
+    bool IsDigital,
     DateTime CreatedAt,
     DateTime UpdatedAt
 );
@@ -25,7 +27,6 @@ public record BookDto(
 public record CreateBookDto(
     string Title,
     Guid[] AuthorIds,
-    string? Isbn,
     int PublicationYear,
     string Publisher,
     Guid[] GenreIds,
@@ -34,13 +35,15 @@ public record CreateBookDto(
     string? CoverUrl,
     string? ReadingStatus,
     bool IsLiked,
-    Guid[]? OrganizerIds
+    Guid[]? OrganizerIds,
+    bool IsTradePaperback = false,
+    string? TradeEdition = null,
+    bool IsDigital = false
 );
 
 public record UpdateBookDto(
     string? Title,
     Guid[]? AuthorIds,
-    string? Isbn,
     int? PublicationYear,
     string? Publisher,
     Guid[]? GenreIds,
@@ -49,7 +52,10 @@ public record UpdateBookDto(
     string? CoverUrl,
     string? ReadingStatus,
     bool? IsLiked,
-    Guid[]? OrganizerIds
+    Guid[]? OrganizerIds,
+    bool? IsTradePaperback = null,
+    string? TradeEdition = null,
+    bool? IsDigital = null
 );
 
 public record UpdateBookStatusDto(

@@ -2,6 +2,10 @@
   <h2>Autores</h2>
   <a routerLink="/authors/new" class="btn-primary">+ Novo Autor</a>
 
+  <div class="filters" style="margin: 12px 0;">
+    <input [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()" placeholder="Buscar autor..." />
+  </div>
+
   <div *ngIf="loading" class="loading">Carregando...</div>
   <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
 

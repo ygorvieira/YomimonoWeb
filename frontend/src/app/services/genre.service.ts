@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Genre, CreateGenreDto, UpdateGenreDto, Result } from '../models/genre.model';
 import { environment } from '../../environments/environment';
@@ -10,8 +10,10 @@ export class GenreService {
 
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<Result<Genre[]>> {
-    return this.http.get<Result<Genre[]>>(this.apiUrl);
+  getAll(searchTerm?: string): Observable<Result<Genre[]>> {
+    let params = new HttpParams();
+    if (searchTerm) params = params.set('searchTerm', searchTerm);
+    return this.http.get<Result<Genre[]>>(this.apiUrl, { params });
   }
 
   getById(id: string): Observable<Result<Genre>> {

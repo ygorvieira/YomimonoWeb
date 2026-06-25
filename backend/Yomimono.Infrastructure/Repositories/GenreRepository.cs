@@ -14,13 +14,16 @@ public class GenreRepository(AppDbContext context) : IGenreRepository
             .FirstOrDefaultAsync(g => g.Id == id && g.DeletedAt == null, cancellationToken);
     }
 
-    public async Task<IEnumerable<Genre>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Genre>> GetAllAsync(string? searchTerm = null, CancellationToken cancellationToken = default)
     {
-        return await context.Genres
+        var query = context.Genres
             .IgnoreQueryFilters()
-            .Where(g => g.DeletedAt == null)
-            .OrderBy(g => g.Name)
-            .ToListAsync(cancellationToken);
+            .Where(g => g.DeletedAt == null);
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+            query = query.Where(g => g.Name.Contains(searchTerm));
+
+        return await query.OrderBy(g => g.Name).ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(Genre entity, CancellationToken cancellationToken = default)

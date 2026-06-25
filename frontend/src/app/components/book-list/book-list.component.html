@@ -6,6 +6,8 @@
   </div>
 
   <div class="filters">
+    <input [(ngModel)]="filterSearchTerm" (ngModelChange)="onFilterChange()" placeholder="Buscar por título..." />
+
     <select [(ngModel)]="filterGenreId" (ngModelChange)="onFilterChange()">
       <option value="">Todos os Gêneros</option>
       <option *ngFor="let genre of genres" [value]="genre.id">{{ genre.name }}</option>
@@ -37,6 +39,8 @@
         <th>Org.</th>
         <th>Gênero(s)</th>
         <th>Ano</th>
+        <th>Enc.</th>
+        <th>Dig.</th>
         <th>Status</th>
         <th>Like</th>
         <th>Ações</th>
@@ -49,6 +53,8 @@
         <td>{{ book.organizerNames?.join(', ') }}</td>
         <td>{{ book.genreNames?.join(', ') }}</td>
         <td>{{ book.publicationYear }}</td>
+        <td>{{ book.isTradePaperback ? '📘' : '' }}</td>
+        <td>{{ book.isDigital ? '💻' : '' }}</td>
         <td>
           <button (click)="cycleStatus(book)" class="status-badge" [class]="'status-badge ' + (book.readingStatus || 'null')">
             {{ book.readingStatus || '--' }}

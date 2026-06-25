@@ -6,7 +6,6 @@ using Yomimono.Application.Books.Common;
 using Yomimono.Application.Books.DTOs;
 using Yomimono.Application.Books.Handlers;
 using Yomimono.Application.Genres.Common;
-using Yomimono.Domain.Common;
 using Yomimono.Domain.Entities;
 
 namespace Yomimono.Api.Tests.Handlers;
@@ -16,7 +15,6 @@ public class CreateBookCommandHandlerTests
     private readonly Mock<IBookRepository> _bookRepositoryMock;
     private readonly Mock<IAuthorRepository> _authorRepositoryMock;
     private readonly Mock<IGenreRepository> _genreRepositoryMock;
-    private readonly Mock<IBookUniquenessChecker> _uniquenessMock;
     private readonly CreateBookCommandHandler _handler;
     private readonly Guid _genreId = Guid.NewGuid();
     private readonly Guid _authorId = Guid.NewGuid();
@@ -26,24 +24,21 @@ public class CreateBookCommandHandlerTests
         _bookRepositoryMock = new Mock<IBookRepository>();
         _authorRepositoryMock = new Mock<IAuthorRepository>();
         _genreRepositoryMock = new Mock<IGenreRepository>();
-        _uniquenessMock = new Mock<IBookUniquenessChecker>();
         _handler = new CreateBookCommandHandler(
             _bookRepositoryMock.Object, _authorRepositoryMock.Object,
-            _genreRepositoryMock.Object, _uniquenessMock.Object);
+            _genreRepositoryMock.Object);
     }
 
     [Fact]
     public async Task Handle_ValidBook_ShouldReturnValidResult()
     {
         var dto = new CreateBookDto(
-            "Dom Casmurro", [_authorId], "9788535902778",
+            "Dom Casmurro", [_authorId],
             1899, "Editora Garnier", [_genreId], null, 256, null, null, false, null
         );
 
         var (author, _) = Author.Create("Machado de Assis");
 
-        _uniquenessMock.Setup(r => r.IsIsbnUniqueAsync(It.IsAny<string>(), null, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
         _genreRepositoryMock.Setup(r => r.GetByIdAsync(_genreId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(Genre.Create("Romance"));
         _authorRepositoryMock.Setup(r => r.GetByIdAsync(_authorId, It.IsAny<CancellationToken>()))
@@ -57,31 +52,13 @@ public class CreateBookCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_DuplicateIsbn_ShouldReturnInvalidResult()
-    {
-        var dto = new CreateBookDto(
-            "Dom Casmurro", [_authorId], "9788535902778",
-            1899, "Editora Garnier", [_genreId], null, 256, null, null, false, null
-        );
-
-        _uniquenessMock.Setup(r => r.IsIsbnUniqueAsync("9788535902778", null, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-
-        var result = await _handler.Handle(new CreateBookCommand(dto), CancellationToken.None);
-
-        result.Valid.ShouldBeFalse();
-    }
-
-    [Fact]
     public async Task Handle_InvalidGenre_ShouldReturnInvalidResult()
     {
         var dto = new CreateBookDto(
-            "Dom Casmurro", [_authorId], "9788535902778",
+            "Dom Casmurro", [_authorId],
             1899, "Editora Garnier", [_genreId], null, 256, null, null, false, null
         );
 
-        _uniquenessMock.Setup(r => r.IsIsbnUniqueAsync(It.IsAny<string>(), null, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
         _genreRepositoryMock.Setup(r => r.GetByIdAsync(_genreId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Genre?)null);
 
@@ -91,39 +68,15 @@ public class CreateBookCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_NullIsbn_ShouldReturnValidResult()
-    {
-        var dto = new CreateBookDto(
-            "Sem ISBN", [_authorId], null,
-            2024, "Editora", [_genreId], null, 100, null, null, false, null
-        );
-
-        var (author, _) = Author.Create("Autor");
-
-        _genreRepositoryMock.Setup(r => r.GetByIdAsync(_genreId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Genre.Create("Ficção"));
-        _authorRepositoryMock.Setup(r => r.GetByIdAsync(_authorId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(author);
-
-        var result = await _handler.Handle(new CreateBookCommand(dto), CancellationToken.None);
-
-        result.Valid.ShouldBeTrue();
-        result.Data.ShouldNotBeNull();
-        result.Data.Isbn.ShouldBeNull();
-    }
-
-    [Fact]
     public async Task Handle_NullPageCount_ShouldReturnValidResult()
     {
         var dto = new CreateBookDto(
-            "Sem páginas", [_authorId], "9788535902778",
+            "Sem páginas", [_authorId],
             2024, "Editora", [_genreId], null, null, null, null, false, null
         );
 
         var (author, _) = Author.Create("Autor");
 
-        _uniquenessMock.Setup(r => r.IsIsbnUniqueAsync(It.IsAny<string>(), null, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
         _genreRepositoryMock.Setup(r => r.GetByIdAsync(_genreId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(Genre.Create("Ficção"));
         _authorRepositoryMock.Setup(r => r.GetByIdAsync(_authorId, It.IsAny<CancellationToken>()))
@@ -137,11 +90,34 @@ public class CreateBookCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_NullIsbn_ShouldSkipUniquenessCheck()
+    public async Task Handle_DigitalBook_ShouldSetIsDigital()
     {
         var dto = new CreateBookDto(
-            "Sem ISBN", [_authorId], null,
-            2024, "Editora", [_genreId], null, 100, null, null, false, null
+            "Livro Digital", [_authorId],
+            2024, "Editora", [_genreId], null, null, null, null, false, null,
+            IsDigital: true
+        );
+
+        var (author, _) = Author.Create("Autor");
+
+        _genreRepositoryMock.Setup(r => r.GetByIdAsync(_genreId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Genre.Create("Tecnologia"));
+        _authorRepositoryMock.Setup(r => r.GetByIdAsync(_authorId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(author);
+
+        var result = await _handler.Handle(new CreateBookCommand(dto), CancellationToken.None);
+
+        result.Valid.ShouldBeTrue();
+        result.Data.IsDigital.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task Handle_TradePaperback_ShouldSetIsTradePaperback()
+    {
+        var dto = new CreateBookDto(
+            "Edição Especial", [_authorId],
+            2024, "Editora", [_genreId], null, 200, null, null, false, null,
+            IsTradePaperback: true, TradeEdition: "1ª Edição"
         );
 
         var (author, _) = Author.Create("Autor");
@@ -154,6 +130,7 @@ public class CreateBookCommandHandlerTests
         var result = await _handler.Handle(new CreateBookCommand(dto), CancellationToken.None);
 
         result.Valid.ShouldBeTrue();
-        _uniquenessMock.Verify(r => r.IsIsbnUniqueAsync(It.IsAny<string>(), null, It.IsAny<CancellationToken>()), Times.Never);
+        result.Data.IsTradePaperback.ShouldBeTrue();
+        result.Data.TradeEdition.ShouldBe("1ª Edição");
     }
 }

@@ -16,12 +16,6 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
             .IsRequired()
             .HasMaxLength(200);
 
-        builder.Property(b => b.Isbn)
-            .HasMaxLength(20);
-
-        builder.HasIndex(b => b.Isbn)
-            .IsUnique();
-
         builder.Property(b => b.Publisher)
             .IsRequired()
             .HasMaxLength(150);
@@ -40,6 +34,15 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
 
         builder.Property(b => b.ReReadCount)
             .HasDefaultValue(0);
+
+        builder.Property(b => b.IsTradePaperback)
+            .HasDefaultValue(false);
+
+        builder.Property(b => b.TradeEdition)
+            .HasMaxLength(200);
+
+        builder.Property(b => b.IsDigital)
+            .HasDefaultValue(false);
 
         builder.HasMany(b => b.BookAuthors)
             .WithOne(ba => ba.Book)

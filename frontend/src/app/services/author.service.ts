@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Author, CreateAuthorDto, UpdateAuthorDto, Result } from '../models/author.model';
 import { environment } from '../../environments/environment';
@@ -10,8 +10,10 @@ export class AuthorService {
 
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<Result<Author[]>> {
-    return this.http.get<Result<Author[]>>(this.apiUrl);
+  getAll(searchTerm?: string): Observable<Result<Author[]>> {
+    let params = new HttpParams();
+    if (searchTerm) params = params.set('searchTerm', searchTerm);
+    return this.http.get<Result<Author[]>>(this.apiUrl, { params });
   }
 
   getById(id: string): Observable<Result<Author>> {
