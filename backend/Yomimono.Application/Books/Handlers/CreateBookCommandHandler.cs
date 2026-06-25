@@ -50,7 +50,7 @@ public class CreateBookCommandHandler(
             request.Book.Description, request.Book.CoverUrl,
             request.Book.ReadingStatus, request.Book.IsLiked,
             organizerIds,
-            request.Book.IsTradePaperback, request.Book.TradeEdition,
+            request.Book.IsTradePaperback, request.Book.Editions?.Select(e => (e.Name, e.Number)).ToArray(),
             request.Book.IsDigital
         );
 
@@ -74,7 +74,7 @@ public class CreateBookCommandHandler(
             genres.Select(g => g.Name).ToArray(),
             book.Description, book.PageCount, book.CoverUrl,
             book.ReadingStatus, book.IsLiked, book.ReReadCount,
-            book.IsTradePaperback, book.TradeEdition, book.IsDigital,
+            book.IsTradePaperback, book.BookEditions.Select(e => new BookEditionDto(e.Name, e.Number)).ToArray(), book.IsDigital,
             book.CreatedAt, book.UpdatedAt
         );
     }

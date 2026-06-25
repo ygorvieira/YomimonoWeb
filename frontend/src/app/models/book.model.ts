@@ -1,3 +1,8 @@
+export interface BookEditionDto {
+  name: string;
+  number: number;
+}
+
 export interface Book {
   id: string;
   title: string;
@@ -16,7 +21,7 @@ export interface Book {
   isLiked: boolean;
   reReadCount: number;
   isTradePaperback: boolean;
-  tradeEdition?: string | null;
+  editions: BookEditionDto[];
   isDigital: boolean;
   createdAt: string;
   updatedAt: string;
@@ -35,7 +40,7 @@ export interface CreateBookDto {
   isLiked: boolean;
   organizerIds?: string[] | null;
   isTradePaperback?: boolean;
-  tradeEdition?: string | null;
+  editions?: BookEditionDto[] | null;
   isDigital?: boolean;
 }
 
@@ -52,7 +57,7 @@ export interface UpdateBookDto {
   isLiked?: boolean | null;
   organizerIds?: string[] | null;
   isTradePaperback?: boolean | null;
-  tradeEdition?: string | null;
+  editions?: BookEditionDto[] | null;
   isDigital?: boolean | null;
 }
 

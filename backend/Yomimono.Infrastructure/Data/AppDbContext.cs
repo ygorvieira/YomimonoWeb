@@ -13,6 +13,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<Genre> Genres => Set<Genre>();
     public DbSet<Author> Authors => Set<Author>();
     public DbSet<BookGenre> BookGenres => Set<BookGenre>();
+    public DbSet<BookEdition> BookEditions => Set<BookEdition>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

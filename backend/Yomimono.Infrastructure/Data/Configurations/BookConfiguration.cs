@@ -38,9 +38,6 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
         builder.Property(b => b.IsTradePaperback)
             .HasDefaultValue(false);
 
-        builder.Property(b => b.TradeEdition)
-            .HasMaxLength(200);
-
         builder.Property(b => b.IsDigital)
             .HasDefaultValue(false);
 
@@ -51,6 +48,10 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
         builder.HasMany(b => b.Genres)
             .WithOne(bg => bg.Book)
             .HasForeignKey(bg => bg.BookId);
+
+        builder.HasMany(b => b.BookEditions)
+            .WithOne(e => e.Book)
+            .HasForeignKey(e => e.BookId);
 
     }
 }

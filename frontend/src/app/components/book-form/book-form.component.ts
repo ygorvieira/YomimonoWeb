@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { BookService } from '../../services/book.service';
 import { AuthorService } from '../../services/author.service';
 import { GenreService } from '../../services/genre.service';
-import { CreateBookDto, UpdateBookDto } from '../../models/book.model';
+import { BookEditionDto, CreateBookDto, UpdateBookDto } from '../../models/book.model';
 import { Author } from '../../models/author.model';
 import { Genre } from '../../models/genre.model';
 
@@ -38,7 +38,7 @@ export class BookFormComponent implements OnInit {
     isLiked: false,
     organizerIds: [],
     isTradePaperback: false,
-    tradeEdition: null,
+    editions: [],
     isDigital: false
   };
 
@@ -93,7 +93,7 @@ export class BookFormComponent implements OnInit {
             isLiked: book.isLiked,
             organizerIds: book.organizerIds,
             isTradePaperback: book.isTradePaperback,
-            tradeEdition: book.tradeEdition,
+            editions: book.editions,
             isDigital: book.isDigital
           };
         } else {
@@ -115,6 +115,8 @@ export class BookFormComponent implements OnInit {
   organizerSearchTerm = '';
   genreSearchTerm = '';
   newAuthorName = '';
+  editionInput = '';
+  editionNumberInput: number | null = null;
 
   get filteredAuthors(): Author[] {
     if (!this.authorSearchTerm.trim()) return this.authors;
@@ -194,6 +196,21 @@ export class BookFormComponent implements OnInit {
     } else {
       this.model.genreIds.push(genreId);
     }
+  }
+
+  addEdition(): void {
+    const name = this.editionInput.trim();
+    if (!name || this.editionNumberInput === null || this.editionNumberInput <= 0) return;
+    if (!this.model.editions) this.model.editions = [];
+    this.model.editions.push({ name, number: this.editionNumberInput });
+    this.editionInput = '';
+    this.editionNumberInput = null;
+  }
+
+  removeEdition(edition: BookEditionDto): void {
+    this.model.editions = (this.model.editions ?? []).filter(
+      e => e.name !== edition.name || e.number !== edition.number
+    );
   }
 
   removeGenre(genreId: string): void {
