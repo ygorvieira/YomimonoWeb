@@ -14,6 +14,7 @@ public class BookRepository(AppDbContext context) : IBookRepository
             .IgnoreQueryFilters()
             .Include(b => b.BookAuthors).ThenInclude(ba => ba.Author)
             .Include(b => b.Genres).ThenInclude(bg => bg.Genre)
+            .Include(b => b.BookEditions)
             .FirstOrDefaultAsync(b => b.Id == id && b.DeletedAt == null, cancellationToken);
     }
 
@@ -56,7 +57,6 @@ public class BookRepository(AppDbContext context) : IBookRepository
 
     public void Update(Book entity)
     {
-        context.Books.Update(entity);
         context.SaveChanges();
     }
 
