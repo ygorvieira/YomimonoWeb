@@ -68,7 +68,7 @@ public class UpdateBookCommandHandler(
         if (error is not null)
             return Result<BookDto>.Failure(error);
 
-        bookRepository.Update(book);
+        await bookRepository.UpdateAsync(book);
 
         var dto = MapToDto(book);
         return Result<BookDto>.Success(dto, "Livro atualizado com sucesso.");

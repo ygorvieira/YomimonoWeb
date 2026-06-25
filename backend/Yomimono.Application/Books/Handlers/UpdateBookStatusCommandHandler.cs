@@ -16,7 +16,7 @@ public class UpdateBookStatusCommandHandler(IBookRepository repository)
             return Result<BookDto>.NotFound("Livro não encontrado.");
 
         book.UpdateStatus(request.Status.ReadingStatus, request.Status.IsLiked);
-        repository.Update(book);
+        await repository.UpdateAsync(book);
 
         var dto = MapToDto(book);
         return Result<BookDto>.Success(dto, "Status atualizado com sucesso.");
