@@ -57,7 +57,25 @@ public class BookRepository(AppDbContext context) : IBookRepository
 
     public async Task UpdateAsync(Book entity)
     {
+        using var transaction = await context.Database.BeginTransactionAsync();
+
+        await context.BookEditions.Where(e => e.BookId == entity.Id).ExecuteDeleteAsync();
+        await context.Set<BookAuthor>().Where(ba => ba.BookId == entity.Id).ExecuteDeleteAsync();
+        await context.BookGenres.Where(bg => bg.BookId == entity.Id).ExecuteDeleteAsync();
+
+        context.ChangeTracker.Clear();
+
+        context.Attach(entity).State = EntityState.Modified;
+
+        foreach (var author in entity.BookAuthors)
+            context.Entry(author).State = EntityState.Added;
+        foreach (var genre in entity.Genres)
+            context.Entry(genre).State = EntityState.Added;
+        foreach (var edition in entity.BookEditions)
+            context.Entry(edition).State = EntityState.Added;
+
         await context.SaveChangesAsync();
+        await transaction.CommitAsync();
     }
 
     public void Delete(Book entity)
